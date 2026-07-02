@@ -1,13 +1,10 @@
 const mongoose = require("mongoose")
 
 const courseModel = require("../../Models/CourseModels/course.model")
-const staffModel = require("../../Models/UserModels/staff.model")
 const studentModel = require("../../Models/UserModels/studentRegistration.model")
 const appointmentModel = require("../../Models/Consuelling Models/appointment.model")
 const quizModel = require("../../Models/QuizModel/quiz.model")
-const quizUploadModel = require("../../Models/QuizModel/quizUploading.model")
 const assignmentModel = require("../../Models/Assignment/assignment.model")
-const assignmentUploadModel = require("../../Models/Assignment/assignmentUploading.model")
 const courseContentModel = require("../../Models/CourseModels/courseContent.model")
 const staffAttendanceModel = require("../../Models/Attendence/staffAttendence.model")
 
@@ -17,14 +14,13 @@ const teacherDashboardInfo = async (req, res) => {
     const teacherObjectId = new mongoose.Types.ObjectId(teacherId)
 
     // =========================
-    // 1. COURSES BASE DATA
+    // COURSES
     // =========================
     const courses = await courseModel.aggregate([
       {
         $match: { instructorTeached: teacherObjectId }
       },
 
-      // teacher
       {
         $lookup: {
           from: "staffmodels",
@@ -35,7 +31,6 @@ const teacherDashboardInfo = async (req, res) => {
       },
       { $unwind: "$teacher" },
 
-      // enrollments → students
       {
         $lookup: {
           from: "courseenrollmentmodels",
@@ -54,7 +49,6 @@ const teacherDashboardInfo = async (req, res) => {
         }
       },
 
-      // content
       {
         $lookup: {
           from: "coursecontentmodels",
@@ -64,7 +58,6 @@ const teacherDashboardInfo = async (req, res) => {
         }
       },
 
-      // appointments
       {
         $lookup: {
           from: "appointmentrequestmodels",
@@ -103,7 +96,6 @@ const teacherDashboardInfo = async (req, res) => {
           },
 
           totalStudents: { $size: "$students" },
-
           totalContent: { $size: "$content" },
 
           totalAppointments: { $size: "$appointments" },
@@ -121,7 +113,29 @@ const teacherDashboardInfo = async (req, res) => {
     ])
 
     // =========================
-    // 2. QUIZ STATS (FIXED)
+    // UNIQUE STUDENTS (FIXED)
+    // =========================
+    const studentMap = new Map()
+
+    courses.forEach(course => {
+      course.students.forEach(student => {
+        if (!studentMap.has(student._id.toString())) {
+          studentMap.set(student._id.toString(), student)
+        }
+      })
+    })
+
+    const uniqueStudents = Array.from(studentMap.values())
+
+    // =========================
+    // APPOINTMENTS
+    // =========================
+    const appointments = await appointmentModel.find({
+      teacherId: teacherObjectId
+    })
+
+    // =========================
+    // QUIZ STATS
     // =========================
     const quizStats = await quizModel.aggregate([
       {
@@ -137,7 +151,7 @@ const teacherDashboardInfo = async (req, res) => {
       },
       {
         $group: {
-          _id: "$course",
+          _id: null,
           totalQuizzes: { $sum: 1 },
           totalSubmissions: { $sum: { $size: "$submissions" } },
           checkedSubmissions: {
@@ -156,7 +170,7 @@ const teacherDashboardInfo = async (req, res) => {
     ])
 
     // =========================
-    // 3. ASSIGNMENT STATS (FIXED)
+    // ASSIGNMENT STATS
     // =========================
     const assignmentStats = await assignmentModel.aggregate([
       {
@@ -172,7 +186,7 @@ const teacherDashboardInfo = async (req, res) => {
       },
       {
         $group: {
-          _id: "$course",
+          _id: null,
           totalAssignments: { $sum: 1 },
           totalSubmissions: { $sum: { $size: "$submissions" } },
           checkedSubmissions: {
@@ -191,19 +205,35 @@ const teacherDashboardInfo = async (req, res) => {
     ])
 
     // =========================
-    // 4. STUDENTS GLOBAL
+    // CONTENT STATS (FIXED)
     // =========================
-    const students = await studentModel.find({})
+    const contentStats = await courseContentModel.aggregate([
+      {
+        $lookup: {
+          from: "coursemodels",
+          localField: "courseId",
+          foreignField: "_id",
+          as: "course"
+        }
+      },
+      { $unwind: "$course" },
+
+      {
+        $match: {
+          "course.instructorTeached": teacherObjectId
+        }
+      },
+
+      {
+        $group: {
+          _id: "$courseId",
+          totalContent: { $sum: 1 }
+        }
+      }
+    ])
 
     // =========================
-    // 5. APPOINTMENTS
-    // =========================
-    const appointments = await appointmentModel.find({
-      teacherId: teacherObjectId
-    })
-
-    // =========================
-    // 6. ATTENDANCE
+    // ATTENDANCE
     // =========================
     const attendanceStats = await staffAttendanceModel.find({
       staffId: teacherObjectId
@@ -217,24 +247,28 @@ const teacherDashboardInfo = async (req, res) => {
 
       summary: {
         totalCourses: courses.length,
-        totalStudents: students.length,
+        totalStudents: uniqueStudents.length,
+
         totalAppointments: appointments.length,
         pendingAppointments: appointments.filter(a => a.status === "pending").length,
 
-        totalQuizzes: quizStats.reduce((a, b) => a + b.totalQuizzes, 0),
-        totalQuizSubmissions: quizStats.reduce((a, b) => a + b.totalSubmissions, 0),
-        checkedQuizSubmissions: quizStats.reduce((a, b) => a + b.checkedSubmissions, 0),
+        totalContent: contentStats.reduce((sum, c) => sum + c.totalContent, 0),
 
-        totalAssignments: assignmentStats.reduce((a, b) => a + b.totalAssignments, 0),
-        totalAssignmentSubmissions: assignmentStats.reduce((a, b) => a + b.totalSubmissions, 0),
-        checkedAssignmentSubmissions: assignmentStats.reduce((a, b) => a + b.checkedSubmissions, 0),
+        totalQuizzes: quizStats[0]?.totalQuizzes || 0,
+        totalQuizSubmissions: quizStats[0]?.totalSubmissions || 0,
+        checkedQuizSubmissions: quizStats[0]?.checkedSubmissions || 0,
+
+        totalAssignments: assignmentStats[0]?.totalAssignments || 0,
+        totalAssignmentSubmissions: assignmentStats[0]?.totalSubmissions || 0,
+        checkedAssignmentSubmissions: assignmentStats[0]?.checkedSubmissions || 0,
 
         attendance: attendanceStats
       },
 
       courses,
-      students,
+      students: uniqueStudents,
       appointments,
+      contentStats,
       quizStats,
       assignmentStats,
       attendanceStats
