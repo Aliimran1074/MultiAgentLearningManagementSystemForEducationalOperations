@@ -15,9 +15,15 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
   const teacherId = import.meta.env.VITE_TEACHER_ID       // in future we can acheive this by login signup
 const [dashboardData, setDashboardData] = useState({
-  teacher: {},
-  summary: {},
-  courses: []
+  appointments:[],
+  assignmentStats:[],
+  attendanceStats:[],
+  currentStats:[],
+  courses:[],
+  quizStats:[],
+  students:[],
+  summary:{},
+  teacher:{}
 })
 
 
@@ -126,7 +132,7 @@ try {
           </TabsContent>
 
           <TabsContent value="students">
-            <StudentList teacherData={teacherData} />
+            <StudentList teacherData={dashboardData} />
           </TabsContent>
 
           <TabsContent value="attendance">
@@ -134,7 +140,7 @@ try {
           </TabsContent>
 
           <TabsContent value="assignments">
-            <AssignmentChecker />
+            <AssignmentChecker teacherData= {teacherData}/>
           </TabsContent>
 
           <TabsContent value="quizzes">

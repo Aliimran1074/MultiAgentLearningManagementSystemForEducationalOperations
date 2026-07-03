@@ -8,10 +8,12 @@ export default function DashboardOverview({ dashboardData }) {
   const avgGrade = dashboardData?.courses?.length
   ? "Calculating..."
   : "0%"
+const pendingCount =
+  dashboardData?.appointments?.filter(a => a.status === "pending").length || 0;
   const stats = [
   {
     title: 'Total Students',
-    value: totalStudents,
+    value: dashboardData?.summary?.totalStudents || 0,
     description: 'Across all classes',
     icon: Users,
     color: 'text-blue-600',
@@ -19,7 +21,7 @@ export default function DashboardOverview({ dashboardData }) {
   },
   {
     title: 'Active Classes',
-    value: activeClasses,
+    value: dashboardData?.summary?.totalCourses || 0,
     description: 'Assigned courses',
     icon: BookOpen,
     color: 'text-green-600',
@@ -27,7 +29,7 @@ export default function DashboardOverview({ dashboardData }) {
   },
   {
     title: 'Pending Assignments',
-    value: '12',
+    value: dashboardData?.summary?.totalAssignmentSubmissions || 0,
     description: 'Need to be checked',
     icon: Clock,
     color: 'text-orange-600',
@@ -35,15 +37,15 @@ export default function DashboardOverview({ dashboardData }) {
   },
   {
     title: 'Appointments Today',
-    value: '3',
-    description: '2 confirmed, 1 pending',
+    value: dashboardData?.summary?.pendingAppointments || 0,
+    description: `${pendingCount} pending`,
     icon: Calendar,
     color: 'text-purple-600',
     bgColor: 'bg-purple-100'
   },
   {
     title: 'Attendance Rate',
-    value: '94%',
+    value: dashboardData?.summary?.attendance?.length || 0 + '%',
     description: 'Last 7 days',
     icon: TrendingUp,
     color: 'text-emerald-600',
@@ -51,7 +53,7 @@ export default function DashboardOverview({ dashboardData }) {
   },
   {
     title: 'Average Grade',
-    value: avgGrade,
+    value: dashboardData?.summary?.totalQuizSubmissions || 0,
     description: 'This semester',
     icon: Award,
     color: 'text-indigo-600',
@@ -175,5 +177,5 @@ export default function DashboardOverview({ dashboardData }) {
         </CardContent>
       </Card> */}
     </div>
-  );
+  )
 }
