@@ -172,3 +172,6 @@ Instructor Id ke through no of course nikalne hai or student ka data frontend pe
 
 2/7/2026
 Dashboard function me student data or assignment me issue araha hai
+
+5/7/2026
+Teacher dashboard me assignment checker hai us ko link karne me issue araha hai , humay yeh karna hoga k previous integration function ko cherne ki jagah humay assignment checker me new useEffect chalana hoga yeh behtar approach hogi

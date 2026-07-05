@@ -140,7 +140,7 @@ try {
           </TabsContent>
 
           <TabsContent value="assignments">
-            <AssignmentChecker teacherData= {teacherData}/>
+            <AssignmentChecker teacherData= {dashboardData}/>
           </TabsContent>
 
           <TabsContent value="quizzes">

@@ -1,149 +1,102 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { FileText, Eye, Download, GraduationCap, X, Sparkles } from 'lucide-react';
+import { FileText, X } from 'lucide-react';
 
 export default function AssignmentChecker({ teacherData }) {
+
   const [selectedTab, setSelectedTab] = useState('unchecked');
   const [selectedAssignment, setSelectedAssignment] = useState(null);
 
   // =========================
-  // FIXED DATA INTEGRATION
+  // DEBUG: RAW DATA CHECK
   // =========================
-  const assignments = useMemo(() => {
-    if (!teacherData?.assignments) return [];
-
-    return teacherData.assignments.map(a => ({
-      id: a._id,
-      title: a.title || "No Title",
-      studentName: a.student?.name || a.studentName || "Unknown Student",
-      class: a.course?.class || "",
-      submittedDate: a.createdAt || "",
-      status: a.status || "unchecked",
-      aiChecked: a.aiChecked || false,
-      aiGrade: a.aiGrade || 0,
-      aiComments: a.aiComments || ""
-    }));
+  useEffect(() => {
+    console.log("🔥 teacherData FULL:", teacherData);
+    console.log("🔥 assignments RAW:", teacherData?.assignments);
   }, [teacherData]);
 
   // =========================
-  // FILTERS
+  // SAFE DATA MAPPING + DEBUG
   // =========================
-  const uncheckedAssignments = useMemo(
-    () => assignments.filter(a => a.status === 'unchecked'),
-    [assignments]
-  );
+  const assignments = useMemo(() => {
 
-  const aiCheckedAssignments = useMemo(
-    () => assignments.filter(a => a.status === 'ai-checked'),
-    [assignments]
-  );
+    console.log("⚙️ useMemo triggered");
 
-  const checkedAssignments = useMemo(
-    () => assignments.filter(a => a.status === 'checked'),
-    [assignments]
-  );
+    if (!teacherData?.assignments) {
+      console.log("❌ No assignments found in teacherData");
+      return [];
+    }
 
-  // =========================
-  // GRADE SUBMIT (LOCAL ONLY)
-  // =========================
-  const handleGradeSubmit = (id, grade, comments) => {
-    setSelectedAssignment(null);
-    // backend update yahan add karna hoga agar needed
-  };
+    console.log("📦 assignments count:", teacherData.assignments.length);
 
-  // =========================
-  // MODAL
-  // =========================
-  const GradeModal = ({ assignment, onClose }) => {
-    const [grade, setGrade] = useState(
-      assignment.grade || assignment.aiGrade || ''
-    );
-    const [comments, setComments] = useState(
-      assignment.comments || assignment.aiComments || ''
-    );
+    const mapped = teacherData.assignments.map((a, index) => {
 
-    return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-        <Card className="w-full max-w-2xl max-h-[95vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-none shadow-2xl">
-          
-          <CardHeader className="sticky top-0 bg-white z-10 border-b flex flex-row justify-between items-center">
-            <div>
-              <CardTitle>Review Submission</CardTitle>
-              <CardDescription>
-                {assignment.studentName} • {assignment.title}
-              </CardDescription>
-            </div>
+      console.log(`➡️ assignment[${index}] raw:`, a);
 
-            <button onClick={onClose} className="p-2 bg-gray-100 rounded-full">
-              <X className="w-5 h-5" />
-            </button>
-          </CardHeader>
+      const submissionCount = a?.submissions?.length || 0;
 
-          <CardContent className="space-y-6 pt-6">
+      return {
+        id: a._id,
+        title: `Assignment ${index + 1}`,
+        course: a.course,
+        status: submissionCount > 0
+          ? a.submissions[0]?.status || "unchecked"
+          : "unchecked",
 
-            {/* AI BOX */}
-            {assignment.aiChecked && (
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <p className="font-bold text-blue-700 flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4" /> AI Suggestion
-                </p>
-                <p className="text-sm mt-2">
-                  Score: {assignment.aiGrade}/100
-                </p>
-                <p className="text-sm text-blue-600">
-                  {assignment.aiComments}
-                </p>
-              </div>
-            )}
+        submissions: a.submissions || [],
+        totalSubmissions: a.totalSubmissions || 0,
+        checkedSubmissions: a.checkedSubmissions || 0,
+      };
+    });
 
-            {/* INPUTS */}
-            <div>
-              <input
-                type="number"
-                value={grade}
-                onChange={(e) => setGrade(e.target.value)}
-                className="w-full p-3 border rounded-lg"
-                placeholder="Enter grade"
-              />
+    console.log("✅ FINAL MAPPED ASSIGNMENTS:", mapped);
 
-              <textarea
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                className="w-full mt-3 p-3 border rounded-lg"
-                placeholder="Feedback"
-              />
-            </div>
+    return mapped;
 
-            <button
-              onClick={() => handleGradeSubmit(assignment.id, grade, comments)}
-              className="w-full bg-blue-600 text-white p-3 rounded-lg"
-            >
-              Submit
-            </button>
-
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
+  }, [teacherData]);
 
   // =========================
-  // UI
+  // FILTERS (WITH DEBUG)
+  // =========================
+  const uncheckedAssignments = useMemo(() => {
+    const data = assignments.filter(a => a.status !== 'checked');
+    console.log("🟡 unchecked:", data);
+    return data;
+  }, [assignments]);
+
+  const checkedAssignments = useMemo(() => {
+    const data = assignments.filter(a => a.status === 'checked');
+    console.log("🟢 checked:", data);
+    return data;
+  }, [assignments]);
+
+  // =========================
+  // UI DEBUG CHECK
+  // =========================
+  useEffect(() => {
+    console.log("🎯 CURRENT TAB:", selectedTab);
+  }, [selectedTab]);
+
+  // =========================
+  // MAIN RENDER
   // =========================
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
 
-      <h1 className="text-3xl font-bold">Assignment Checker</h1>
+      <h1 className="text-3xl font-bold">
+        Assignment Checker
+      </h1>
 
       {/* TABS */}
       <div className="flex gap-6 border-b">
-        {['unchecked', 'ai-checked', 'checked'].map(tab => (
+        {['unchecked', 'checked'].map(tab => (
           <button
             key={tab}
             onClick={() => setSelectedTab(tab)}
             className={`pb-2 ${
-              selectedTab === tab ? 'text-blue-600 border-b-2 border-blue-600' : ''
+              selectedTab === tab
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : ''
             }`}
           >
             {tab}
@@ -153,44 +106,75 @@ export default function AssignmentChecker({ teacherData }) {
 
       {/* LIST */}
       <div className="space-y-4">
+
         {(selectedTab === 'unchecked'
           ? uncheckedAssignments
-          : selectedTab === 'ai-checked'
-          ? aiCheckedAssignments
           : checkedAssignments
-        ).map(a => (
-          <Card key={a.id}>
-            <CardContent className="p-4 flex justify-between items-center">
+        ).map((a, i) => {
 
-              <div>
-                <h2 className="font-bold">{a.title}</h2>
-                <p className="text-sm text-gray-500">
-                  {a.studentName} • Class {a.class}
-                </p>
-              </div>
+          console.log("🧾 rendering assignment:", a);
 
-              <button
-                onClick={() => setSelectedAssignment(a)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-              >
-                Grade
-              </button>
+          return (
+            <Card key={a.id || i}>
+              <CardContent className="p-4 flex justify-between items-center">
 
-            </CardContent>
-          </Card>
-        ))}
+                <div>
+                  <h2 className="font-bold">
+                    {a.title}
+                  </h2>
+
+                  <p className="text-sm text-gray-500">
+                    Course: {a.course}
+                  </p>
+
+                  <p className="text-xs text-gray-400">
+                    Status: {a.status}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    console.log("📌 selected assignment:", a);
+                    setSelectedAssignment(a);
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Open
+                </button>
+
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* MODAL */}
       {selectedAssignment && (
-        <GradeModal
-          assignment={selectedAssignment}
-          onClose={() => setSelectedAssignment(null)}
-        />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+
+          <Card className="w-full max-w-xl">
+
+            <CardHeader className="flex justify-between">
+              <CardTitle>Assignment Debug View</CardTitle>
+
+              <button onClick={() => setSelectedAssignment(null)}>
+                <X />
+              </button>
+            </CardHeader>
+
+            <CardContent className="space-y-2">
+
+              <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto">
+                {JSON.stringify(selectedAssignment, null, 2)}
+              </pre>
+
+            </CardContent>
+
+          </Card>
+
+        </div>
       )}
+
     </div>
   );
 }
-
-
-// is ko test karna hai 
