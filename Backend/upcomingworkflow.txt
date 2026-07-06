@@ -175,3 +175,6 @@ Dashboard function me student data or assignment me issue araha hai
 
 5/7/2026
 Teacher dashboard me assignment checker hai us ko link karne me issue araha hai , humay yeh karna hoga k previous integration function ko cherne ki jagah humay assignment checker me new useEffect chalana hoga yeh behtar approach hogi
+
+7/7/2026
+Quiz checker component to test karna hai oe marks bhi shahyad show ni horahe yeh thek karke teacher dashboard k sare components pore karne hai

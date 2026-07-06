@@ -513,14 +513,14 @@ try {
         return res.status(400).json({message:'Instructor Not Match'})
     } 
     
-     const checkIsAssignmentUploadedByStudentOrNot = await assignmentUploadingModel.findOne({assigmnetId:assignmentId,studentId:studentId})
+     const checkIsAssignmentUploadedByStudentOrNot = await assignmentUploadingModel.findOne({assignmentId:assignmentId,studentId:studentId})
     if(!checkIsAssignmentUploadedByStudentOrNot){
         console.log("Student not Assignment Quiz Yet")
         return res.status(400).json({message:"Student not Uploaded Assignment Yet"})
     }
     // console.log("Uploaded Quiz Found ")
     let assignMarksInfo = checkIsAssignmentUploadedByStudentOrNot.marksAssigned
-    console.log("Assign Marks Info",assignMarksInfo)
+    console.log("Assign Marks In    fo",assignMarksInfo)
     if(assignMarksInfo)
         {
             console.log("Marks Already Assign")
