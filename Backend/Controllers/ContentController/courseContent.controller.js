@@ -1,8 +1,7 @@
-// const courseModel= require('../../Models/CourseModels/course.model')
-// const institute = require('../../Models/InstituteBatchesClasses/Institute.model')
 const {imageKitConfig,fileIdByName}= require('../../ImageKit.IO Setup/setup')
-const { courseContentModel } = require('../../Models/CourseModels/courseContent.model')
-
+const courseContentModel  = require('../../Models/CourseModels/courseContent.model.js')
+const courseModel = require('../../Models/CourseModels/course.model.js')
+const mongoose = require('mongoose')
 const createManualCourseContent = async(req,res)=>{
     try {
         if(!req.file){
@@ -88,4 +87,64 @@ const deleteCourseContent = async(req,res)=>{
     }
 }
 
-module.exports = {createManualCourseContent,deleteCourseContent}
+const getTeacherCourseContent = async(req,res)=>{
+try {
+
+    const {teacherId}=req.params
+    const teacherObjectId = new mongoose.Types.ObjectId(teacherId)
+
+    const content = await courseModel.aggregate([
+
+        {
+            $match:{
+                instructorTeached:teacherObjectId
+            }
+        },
+
+
+        {
+            $lookup:{
+                from:"coursecontentmodels",
+                localField:"_id",
+                foreignField:"courseId",
+                as:"contents"
+            }
+        },
+
+
+        {
+            $project:{
+                courseId:"$_id",
+                courseName:"$name",
+
+                contents:{
+                    _id:1,
+                    contentTitle:1,
+                    fileUrl:1,
+                    createdAt:1
+                }
+            }
+        }
+
+    ])
+
+
+    return res.status(200).json(content)
+
+
+}
+catch(error){
+
+    console.log(
+        "Error in Get Teacher Course Content",
+        error
+    )
+
+    return res.status(500).json({
+        message:error.message
+    })
+
+}
+
+}
+module.exports = {createManualCourseContent,deleteCourseContent,getTeacherCourseContent}

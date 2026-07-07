@@ -1,207 +1,243 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   CardDescription
 } from './ui/card';
 
-import { 
-  ClipboardCheck, 
-  Clock, 
-  CheckCircle, 
-  BarChart3, 
-  ArrowLeft,
+import {
+  Clock,
+  CheckCircle,
   X,
   Download,
   Send
 } from 'lucide-react';
 
 
+
 export default function QuizChecker() {
 
 
-  const teacherId = import.meta.env.VITE_TEACHER_ID;
+const teacherId = import.meta.env.VITE_TEACHER_ID;
 
 
-  const [selectedTab,setSelectedTab] = useState("pending");
+const [selectedTab,setSelectedTab] = useState("pending");
 
-  const [selectedQuiz,setSelectedQuiz] = useState(null);
+const [selectedQuiz,setSelectedQuiz] = useState(null);
 
+const [quizzes,setQuizzes] = useState([]);
 
-  const [quizzes,setQuizzes] = useState([]);
 
 
 
-  // =========================
-  // FETCH QUIZ DATA
-  // =========================
+// =========================
+// FETCH QUIZ DATA
+// =========================
 
-  useEffect(()=>{
 
+useEffect(()=>{
 
-    const fetchQuizData = async()=>{
 
-      try{
+const fetchQuizData = async()=>{
 
-        const res = await fetch(
-          `http://localhost:3000/api/teacherDashboard/${teacherId}/quizSubmission`
-        );
+try{
 
 
-        const data = await res.json();
+const res = await fetch(
+`http://localhost:3000/api/teacherDashboard/${teacherId}/quizSubmission`
+);
 
 
-        console.log("📦 QUIZ DATA:",data);
+const data = await res.json();
 
 
-        setQuizzes(data);
+console.log("📦 QUIZ DATA:",data);
 
 
-      }
-      catch(error){
+setQuizzes(data);
 
-        console.log(
-          "❌ Quiz Fetch Error:",
-          error
-        );
 
-      }
+}
 
-    }
+catch(error){
 
+console.log(
+"❌ Quiz Fetch Error",
+error
+);
 
-    if(teacherId)
-    fetchQuizData();
+}
 
 
-  },[teacherId]);
+}
 
 
 
+if(teacherId)
+fetchQuizData();
 
 
-  // =========================
-  // FILTERS
-  // =========================
 
+},[teacherId]);
 
-  const pendingQuizzes = useMemo(()=>{
 
-    return quizzes.filter(
-      q=>q.status==="uncheck"
-    );
 
-  },[quizzes]);
 
 
 
 
-  const gradedQuizzes = useMemo(()=>{
+// =========================
+// FILTER
+// =========================
 
-    return quizzes.filter(
-      q=>q.status==="checked"
-    );
 
-  },[quizzes]);
+const pendingQuizzes = useMemo(()=>{
 
 
+return quizzes.filter(
+q=>q.status==="uncheck"
+);
 
 
+},[quizzes]);
 
-  const currentData = 
-    selectedTab==="pending"
-    ? pendingQuizzes
-    : gradedQuizzes;
 
 
 
+const checkedQuizzes = useMemo(()=>{
 
-  // =========================
-  // DOWNLOAD
-  // =========================
 
+return quizzes.filter(
+q=>q.status==="checked"
+);
 
-  const handleDownload=(url)=>{
 
-    if(url)
-    {
-      window.open(url,"_blank");
-    }
+},[quizzes]);
 
-  };
 
 
 
 
+const currentData =
+selectedTab==="pending"
+?
+pendingQuizzes
+:
+checkedQuizzes;
 
-  // =========================
-  // MODAL
-  // =========================
 
 
-  const QuizDetailModal=({quiz,onClose})=>{
 
 
-    const [score,setScore]=useState(
-      quiz.score || ""
-    );
 
 
-    const [feedback,setFeedback]=useState("");
+// =========================
+// DOWNLOAD
+// =========================
 
 
+const handleDownload=(url)=>{
 
-    const handleSave=()=>{
 
+if(url){
 
-      console.log(
-        "SAVE QUIZ MARKS",
-        {
-          quizId:quiz.quizId,
-          studentId:quiz.studentId,
-          marks:score
-        }
-      );
+window.open(
+url,
+"_blank"
+);
 
+}
 
-      /*
-        yahan manual quiz marks API call add hogi
-      */
 
+};
 
-      onClose();
 
-    }
 
 
 
-    return(
+
+
+
+// =========================
+// MARK QUIZ
+// =========================
+
+
+const handleSaveMarks=(quiz,marks,feedback)=>{
+
+
+console.log(
+"Saving Quiz Marks",
+{
+quizId:quiz.quizId,
+studentId:quiz.studentId,
+marks,
+feedback
+}
+);
+
+
+// API yahan add hogi
+
+
+setSelectedQuiz(null);
+
+
+};
+
+
+
+
+
+
+
+
+
+// =========================
+// MODAL
+// =========================
+
+
+const QuizModal=({quiz,onClose})=>{
+
+
+const [marks,setMarks]=useState(
+quiz.marks || ""
+);
+
+
+const [feedback,setFeedback]=useState("");
+
+
+
+return(
 
 <div className="
-fixed inset-0 
-bg-black/60 
-flex items-center 
-justify-center 
-z-50 
+fixed
+inset-0
+bg-black/60
+flex
+items-center
+justify-center
+z-50
 p-4
 ">
 
 
 <Card className="
-w-full 
-max-w-3xl
-max-h-[90vh]
-overflow-y-auto
+w-full
+max-w-xl
 rounded-3xl
 ">
 
 
-<CardHeader 
-className="
-flex flex-row 
-justify-between 
+<CardHeader className="
+flex
+flex-row
+justify-between
 items-center
 ">
 
@@ -216,16 +252,21 @@ Grade Quiz
 <CardDescription>
 
 {quiz.studentName}
- • 
+•
 {quiz.quizTitle}
 
 </CardDescription>
 
+
 </div>
 
 
-<button onClick={onClose}>
+<button
+onClick={onClose}
+>
+
 <X/>
+
 </button>
 
 
@@ -238,39 +279,62 @@ Grade Quiz
 <CardContent className="space-y-5">
 
 
+<div className="
+grid
+grid-cols-2
+gap-4
+">
 
-<div className="grid grid-cols-2 gap-4">
 
+<div className="
+bg-blue-50
+p-4
+rounded-xl
+">
 
-<div className="p-4 bg-blue-50 rounded-xl">
 
 <p className="text-xs">
 Student
 </p>
 
+
 <p className="font-bold">
+
 {quiz.studentName}
+
 </p>
+
 
 </div>
 
 
 
-<div className="p-4 bg-purple-50 rounded-xl">
+
+
+<div className="
+bg-purple-50
+p-4
+rounded-xl
+">
+
 
 <p className="text-xs">
 Course
 </p>
 
+
 <p className="font-bold">
+
 {quiz.courseName}
+
 </p>
 
-</div>
-
-
 
 </div>
+
+
+</div>
+
 
 
 
@@ -281,9 +345,9 @@ Course
 onClick={()=>handleDownload(quiz.uploadedFile)}
 
 className="
-flex 
-items-center 
+flex
 gap-2
+items-center
 bg-gray-100
 px-4
 py-2
@@ -292,11 +356,16 @@ rounded-xl
 
 >
 
+
 <Download size={18}/>
 
 Download Quiz File
 
+
 </button>
+
+
+
 
 
 
@@ -314,10 +383,10 @@ Marks
 
 type="number"
 
-value={score}
+value={marks}
 
 onChange={
-e=>setScore(e.target.value)
+e=>setMarks(e.target.value)
 }
 
 className="
@@ -329,7 +398,10 @@ rounded-xl
 
 />
 
+
 </div>
+
+
 
 
 
@@ -367,9 +439,15 @@ rounded-xl
 
 
 
+
+
 <button
 
-onClick={handleSave}
+onClick={()=>handleSaveMarks(
+quiz,
+marks,
+feedback
+)}
 
 className="
 w-full
@@ -377,21 +455,21 @@ bg-blue-600
 text-white
 py-3
 rounded-xl
-font-bold
 flex
 justify-center
 gap-2
+font-bold
 "
 
 >
+
 
 <Send size={18}/>
 
 Save Result
 
+
 </button>
-
-
 
 
 
@@ -403,9 +481,13 @@ Save Result
 
 </div>
 
-    )
+)
 
-  }
+
+}
+
+
+
 
 
 
@@ -413,11 +495,12 @@ Save Result
 
 
 // =========================
-// MAIN UI
+// UI
 // =========================
 
 
-return (
+return(
+
 
 <div className="
 max-w-6xl
@@ -441,13 +524,14 @@ Quiz Checker
 
 
 
+
+
 {/* STATS */}
 
 
 <div className="
-grid 
-grid-cols-2 
-lg:grid-cols-4 
+grid
+grid-cols-2
 gap-4
 ">
 
@@ -461,6 +545,7 @@ gap-4
 <p>
 Pending
 </p>
+
 
 <h2 className="text-2xl font-bold">
 
@@ -483,13 +568,15 @@ Pending
 
 <CheckCircle/>
 
+
 <p>
 Checked
 </p>
 
+
 <h2 className="text-2xl font-bold">
 
-{gradedQuizzes.length}
+{checkedQuizzes.length}
 
 </h2>
 
@@ -499,8 +586,8 @@ Checked
 </Card>
 
 
-
 </div>
+
 
 
 
@@ -512,7 +599,7 @@ Checked
 
 <div className="
 flex
-gap-3
+gap-4
 border-b
 ">
 
@@ -531,8 +618,7 @@ key={tab}
 onClick={()=>setSelectedTab(tab)}
 
 className={`
-px-5
-py-2
+pb-2
 font-bold
 ${
 selectedTab===tab
@@ -551,10 +637,14 @@ selectedTab===tab
 
 
 ))
+
 }
 
 
 </div>
+
+
+
 
 
 
@@ -568,6 +658,7 @@ selectedTab===tab
 
 
 {
+
 currentData.length===0
 
 ?
@@ -586,12 +677,11 @@ No {selectedTab} quizzes available
 
 :
 
+
 currentData.map(q=>(
 
 
-<Card 
-key={q.submissionId}
->
+<Card key={q.submissionId}>
 
 
 <CardContent className="
@@ -604,6 +694,7 @@ items-center
 
 <div>
 
+
 <h2 className="font-bold">
 
 {q.quizTitle}
@@ -611,19 +702,34 @@ items-center
 </h2>
 
 
-<p className="text-sm text-gray-500">
+
+<p className="
+text-sm
+text-gray-500
+">
 
 {q.studentName}
- •
+•
 {q.courseName}
 
 </p>
 
 
-<p className="text-xs">
+
+
+<p className="
+text-xs
+text-gray-400
+">
 
 Status:
-{q.status}
+{
+q.status==="uncheck"
+?
+"Pending"
+:
+"Checked"
+}
 
 </p>
 
@@ -633,6 +739,45 @@ Status:
 
 
 
+
+
+
+
+<div className="flex gap-2">
+
+
+{
+
+selectedTab==="checked"
+
+&&
+
+<button
+
+onClick={()=>handleDownload(q.uploadedFile)}
+
+className="
+bg-gray-100
+p-3
+rounded-xl
+"
+
+>
+
+<Download size={18}/>
+
+</button>
+
+}
+
+
+
+
+{
+
+selectedTab==="pending"
+
+&&
 
 <button
 
@@ -648,16 +793,15 @@ rounded-xl
 
 >
 
-{
-selectedTab==="checked"
-?
-"Review"
-:
-"Grade"
+Grade
+
+</button>
+
 }
 
 
-</button>
+
+</div>
 
 
 
@@ -681,9 +825,12 @@ selectedTab==="checked"
 
 
 {
-selectedQuiz &&
 
-<QuizDetailModal
+selectedQuiz
+
+&&
+
+<QuizModal
 
 quiz={selectedQuiz}
 
@@ -697,7 +844,6 @@ onClose={
 
 
 </div>
-
 
 )
 

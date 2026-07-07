@@ -148,11 +148,11 @@ try {
           </TabsContent>
 
           <TabsContent value="content">
-            <ContentUploader />
+            <ContentUploader teacherData = {dashboardData} />
           </TabsContent>
 
           <TabsContent value="appointments">
-            <AppointmentManager />
+            <AppointmentManager teacherData = {dashboardData} />
           </TabsContent>
 
           <TabsContent value="ai-agents">

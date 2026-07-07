@@ -177,4 +177,8 @@ Dashboard function me student data or assignment me issue araha hai
 Teacher dashboard me assignment checker hai us ko link karne me issue araha hai , humay yeh karna hoga k previous integration function ko cherne ki jagah humay assignment checker me new useEffect chalana hoga yeh behtar approach hogi
 
 7/7/2026
-Quiz checker component to test karna hai oe marks bhi shahyad show ni horahe yeh thek karke teacher dashboard k sare components pore karne hai
+Quiz checker component to test karna hai or marks bhi shahyad show ni horahe yeh thek karke teacher dashboard k sare components pore karne hai
+
+
+8/7/2026 
+Appointment component per kaam start hogya hai chatgpt ne backend me kuch changes ka kaha uska last response dekh kar changes karna phr last component complete karke student dashboard per move karna
