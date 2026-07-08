@@ -101,10 +101,10 @@ try {
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Students</span>
             </TabsTrigger>
-            <TabsTrigger value="attendance" className="flex items-center gap-2">
+            {/* <TabsTrigger value="attendance" className="flex items-center gap-2">
               <ClipboardCheck className="w-4 h-4" />
               <span className="hidden sm:inline">Attendance</span>
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger value="assignments" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Assignments</span>
@@ -135,9 +135,9 @@ try {
             <StudentList teacherData={dashboardData} />
           </TabsContent>
 
-          <TabsContent value="attendance">
+          {/* <TabsContent value="attendance">
             <AttendanceTracker teacherData={teacherData} />
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="assignments">
             <AssignmentChecker/>
@@ -156,7 +156,7 @@ try {
           </TabsContent>
 
           <TabsContent value="ai-agents">
-            <AIAgentsControl />
+            <AIAgentsControl teacherId= {teacherId} />
           </TabsContent>
         </Tabs>
       </main>

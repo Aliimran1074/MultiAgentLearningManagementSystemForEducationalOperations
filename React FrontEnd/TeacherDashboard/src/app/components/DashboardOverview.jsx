@@ -98,7 +98,7 @@ const pendingCount =
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Latest updates from your classes</CardDescription>
@@ -119,10 +119,10 @@ const pendingCount =
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Upcoming Tasks */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Upcoming Tasks</CardTitle>
             <CardDescription>Things you need to complete</CardDescription>
@@ -146,7 +146,7 @@ const pendingCount =
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Quick Actions */}

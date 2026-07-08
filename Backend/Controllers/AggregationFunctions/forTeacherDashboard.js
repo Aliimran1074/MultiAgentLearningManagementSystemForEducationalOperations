@@ -94,9 +94,74 @@ const teacherDashboardInfo = async (req, res) => {
     // =========================
     // APPOINTMENTS
     // =========================
-    const appointments = await appointmentModel.find({
+// =========================
+// APPOINTMENTS
+// =========================
+const appointments = await appointmentModel.aggregate([
+  {
+    $match: {
       teacherId: teacherObjectId
-    })
+    }
+  },
+
+  {
+    $lookup: {
+      from: "studentregistrationmodels",
+      localField: "studentId",
+      foreignField: "_id",
+      as: "student"
+    }
+  },
+
+  {
+    $unwind: "$student"
+  },
+
+  {
+    $lookup: {
+      from: "coursemodels",
+      localField: "courseId",
+      foreignField: "_id",
+      as: "course"
+    }
+  },
+
+  {
+    $unwind: "$course"
+  },
+
+  {
+    $project: {
+      _id: 1,
+      appointmentDate: 1,
+      startTime: 1,
+      endTime: 1,
+      status: 1,
+      reason: 1,
+      teacherRemarks: 1,
+      retryAfter: 1,
+      createdAt: 1,
+
+      student: {
+        _id: "$student._id",
+        name: "$student.name"
+      },
+
+      course: {
+        _id: "$course._id",
+        name: "$course.name",
+        class: "$course.ForClass",
+        semester: "$course.ForSemester"
+      }
+    }
+  },
+
+  {
+    $sort: {
+      createdAt: -1
+    }
+  }
+])
 
     // =========================
     // QUIZ STATS
