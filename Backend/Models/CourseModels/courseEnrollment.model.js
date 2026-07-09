@@ -4,7 +4,7 @@ const mongoose = require ('mongoose')
 const courseEnrollmentSchema = new mongoose.Schema({
    studentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "studentModel",
+      ref: "studentRegistrationModel",
       required: true
    },
    courseId: {

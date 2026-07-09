@@ -1,137 +1,274 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookOpen, ClipboardList, Award, MessageCircle, Home } from 'lucide-react';
+
 import Dashboard from './components/Dashboard';
 import ContentView from './components/ContentView';
 import QuizAssignment from './components/QuizAssignment';
 import Grading from './components/Grading';
 import Counseling from './components/Counseling';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+export default function App(){
 
-  // Mock student data
-  const [studentData, setStudentData] = useState({
-    name: 'Alex Johnson',
-    studentId: 'ST2024-1523',
-    grades: [
-      { subject: 'Mathematics', score: 45, total: 100, type: 'Quiz' },
-      { subject: 'Physics', score: 78, total: 100, type: 'Assignment' },
-      { subject: 'Chemistry', score: 38, total: 100, type: 'Quiz' },
-      { subject: 'English', score: 85, total: 100, type: 'Assignment' },
-      { subject: 'Computer Science', score: 42, total: 100, type: 'Quiz' },
-    ],
-  });
+const studentId="6a12dcfb7ee0df75b1e22a45";
 
-  // Calculate average percentage
-  const calculateAverage = () => {
-    const total = studentData.grades.reduce(
-      (sum, grade) => sum + (grade.score / grade.total) * 100,
-      0
-    );
-    return total / studentData.grades.length;
-  };
+const [activeTab,setActiveTab]=useState("dashboard");
+const [studentData,setStudentData]=useState(null);
+const [loading,setLoading]=useState(true);
 
-  const averagePercentage = calculateAverage();
-  const needsCounseling = averagePercentage < 50;
 
-  const handleQuizSubmit = (subject, score, total) => {
-    setStudentData({
-      ...studentData,
-      grades: [...studentData.grades, { subject, score, total, type: 'Quiz' }],
-    });
-    setActiveTab('grading');
-  };
+const getStudentDashboardInfo=async()=>{
 
-  const navigation = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'content', label: 'Content', icon: BookOpen },
-    { id: 'quiz', label: 'Quiz & Assignments', icon: ClipboardList },
-    { id: 'grading', label: 'Grading', icon: Award },
-    { id: 'counseling', label: 'Counseling', icon: MessageCircle, alert: needsCounseling },
-  ];
+try{
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-gray-900">Student Portal</h1>
-            <p className="text-gray-600">
-              {studentData.name} - {studentData.studentId}
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <button
-              style={{
-                cursor: 'pointer',
-                backgroundColor: 'black',
-                color: 'white',
-                padding: '6px 12px',
-                borderRadius: '4px',
-              }}
-              onClick={() => {
-                window.location.href = "https://super-admin-dashboard-frontend.vercel.app/";
-              }}
-            >
-              Next Dashboard
-            </button>
-            <div className="text-right">
-              <p className="text-gray-600">Average Score</p>
-              <p className={`${averagePercentage >= 50 ? 'text-green-600' : 'text-red-600'}`}>
-                {averagePercentage.toFixed(1)}%
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
+const response=await fetch(
+`http://localhost:4000/api/studentDashboardInfo/${studentId}`
+);
 
-      {/* Navigation */}
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Added overflow-x-auto and hide scrollbar */}
-          <div className="flex gap-1 overflow-x-auto no-scrollbar">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors relative ${
-                    activeTab === item.id
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                  {item.alert && (
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
+const data=await response.json();
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'dashboard' && (
-          <Dashboard
-            studentData={studentData}
-            averagePercentage={averagePercentage}
-            needsCounseling={needsCounseling}
-            onNavigate={setActiveTab}
-          />
-        )}
-        {activeTab === 'content' && <ContentView />}
-        {activeTab === 'quiz' && <QuizAssignment onSubmit={handleQuizSubmit} />}
-        {activeTab === 'grading' && <Grading grades={studentData.grades} />}
-        {activeTab === 'counseling' && (
-          <Counseling needsCounseling={needsCounseling} grades={studentData.grades} />
-        )}
-      </main>
-    </div>
-  );
+console.log("Student Dashboard Data",data);
+
+
+if(data.success){
+
+setStudentData(data.data);
+
+}
+
+}
+catch(error){
+
+console.log(error);
+
+}
+finally{
+
+setLoading(false);
+
+}
+
+}
+
+
+
+useEffect(()=>{
+
+getStudentDashboardInfo();
+
+},[])
+
+
+
+if(loading){
+
+return <p>Loading Student Dashboard...</p>
+
+}
+
+
+
+const course = studentData?.courses?.[0] || {};
+
+
+
+const navigation=[
+
+{
+id:"dashboard",
+label:"Dashboard",
+icon:Home
+},
+
+{
+id:"content",
+label:"Content",
+icon:BookOpen
+},
+
+{
+id:"quiz",
+label:"Quiz & Assignments",
+icon:ClipboardList
+},
+
+{
+id:"grading",
+label:"Grading",
+icon:Award
+},
+
+{
+id:"counseling",
+label:"Counseling",
+icon:MessageCircle
+}
+
+]
+
+
+
+return(
+
+<div className="min-h-screen bg-gray-50">
+
+
+<header className="bg-white shadow-sm border-b">
+
+<div className="max-w-7xl mx-auto px-4 py-4">
+
+
+<h1 className="text-gray-900">
+Student Portal
+</h1>
+
+
+<p className="text-gray-600">
+{studentData?.name}
+</p>
+
+
+</div>
+
+</header>
+
+
+
+<nav className="bg-white border-b">
+
+<div className="flex gap-2 overflow-x-auto">
+
+
+{
+navigation.map(item=>{
+
+const Icon=item.icon;
+
+return(
+
+<button
+
+key={item.id}
+
+onClick={()=>setActiveTab(item.id)}
+
+className={`flex items-center gap-2 px-6 py-4 border-b-2 ${
+activeTab===item.id
+?
+"border-blue-600 text-blue-600"
+:
+"border-transparent text-gray-600"
+}`}
+
+>
+
+<Icon className="w-5 h-5"/>
+
+{item.label}
+
+</button>
+
+)
+
+})
+
+}
+
+
+</div>
+
+</nav>
+
+
+
+
+<main className="max-w-7xl mx-auto px-4 py-8">
+
+
+{
+activeTab==="dashboard" &&
+
+<Dashboard
+
+studentData={studentData}
+
+/>
+
+}
+
+
+
+{
+
+activeTab==="content" &&
+
+<ContentView
+courses={studentData?.courses || []}
+/>
+
+
+}
+
+
+
+{
+activeTab==="quiz" &&
+
+<QuizAssignment
+
+assignments={course.assignments || []}
+
+quizzes={course.quizzes || []}
+
+submittedAssignments={course.submittedAssignments || []}
+
+submittedQuizzes={course.submittedQuizzes || []}
+
+/>
+
+}
+
+
+
+{
+activeTab==="grading" &&
+
+<Grading
+
+grades={[
+...(course.submittedAssignments || []),
+...(course.submittedQuizzes || [])
+]}
+
+/>
+
+}
+
+
+
+{
+activeTab==="counseling" &&
+
+<Counseling
+
+counsellingData={studentData?.counselling || []}
+
+grades={[
+...(course.submittedAssignments || []),
+...(course.submittedQuizzes || [])
+]}
+
+/>
+
+}
+
+
+
+</main>
+
+
+</div>
+
+
+)
+
 }

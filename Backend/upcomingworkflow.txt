@@ -188,3 +188,6 @@ AI agents wale component per kaam chal rahah hai record show horaha hai bs topic
 
 9/7/2026
 Teacher dashboard done student dashboard ko aj pora karna hai 
+
+10/7/2026
+Student dashboard k quiz assignment wale component me kaam chal raha hai , but error araha hai pehle data check karna hai backend se kya araha phr frontend ko set karna hai
