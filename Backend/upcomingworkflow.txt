@@ -191,3 +191,6 @@ Teacher dashboard done student dashboard ko aj pora karna hai
 
 10/7/2026
 Student dashboard k quiz assignment wale component me kaam chal raha hai , but error araha hai pehle data check karna hai backend se kya araha phr frontend ko set karna hai
+
+10/7/2026
+Student dashboard done move to institute admin dashboard

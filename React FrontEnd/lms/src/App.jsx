@@ -67,7 +67,7 @@ return <p>Loading Student Dashboard...</p>
 
 
 
-const course = studentData?.courses?.[0] || {};
+const course = studentData?.courses?.[0] || {}
 
 
 
@@ -209,20 +209,17 @@ courses={studentData?.courses || []}
 }
 
 
-
+ 
 {
 activeTab==="quiz" &&
 
 <QuizAssignment
-
+courseName={course.courseName}
 assignments={course.assignments || []}
-
 quizzes={course.quizzes || []}
-
 submittedAssignments={course.submittedAssignments || []}
-
 submittedQuizzes={course.submittedQuizzes || []}
-
+studentId={studentId}
 />
 
 }
@@ -233,7 +230,6 @@ submittedQuizzes={course.submittedQuizzes || []}
 activeTab==="grading" &&
 
 <Grading
-
 grades={[
 ...(course.submittedAssignments || []),
 ...(course.submittedQuizzes || [])
@@ -250,7 +246,7 @@ activeTab==="counseling" &&
 
 <Counseling
 
-counsellingData={studentData?.counselling || []}
+counsellingData={course.counselling || []}
 
 grades={[
 ...(course.submittedAssignments || []),

@@ -1,7 +1,6 @@
 const assignmentModel = require("../../Models/Assignment/assignment.model")
 const assignmentUploadingModel = require("../../Models/Assignment/assignmentUploading.model")
-const { courseEnrollmentModel } = require("../../Models/CourseModels/courseEnrollment.model")
-// const studentRegistrationModel = require("../../Models/UserModels/studentRegistration.model")
+const  courseEnrollmentModel = require("../../Models/CourseModels/courseEnrollment.model")
 const { imageKitConfig} = require('../../ImageKit.IO Setup/setup')
 
 
@@ -65,6 +64,18 @@ const assignmentUploading= async(req,res)=>{
         return res.status(200).json({message:"Assignment Uploaded Successfully",uploadAssignment})
 
 
+
+    } catch (error) {
+        console.log("Error in Assignment Uploading Function",error)
+        return res.status(404).json({message:"Error in Assignment Uploading Function",error})
+    }
+}
+
+
+module.exports = {assignmentUploading}
+
+
+
         // // ids match karke upload karna hai bs
         
         
@@ -85,14 +96,4 @@ const assignmentUploading= async(req,res)=>{
 
         // return res.status(200).json({message:"Thank you"})
        
-
-    } catch (error) {
-        console.log("Error in Assignment Uploading Function",error)
-        return res.status(404).json({message:"Error in Assignment Uploading Function",error})
-    }
-}
-
-
-module.exports = {assignmentUploading}
-
 

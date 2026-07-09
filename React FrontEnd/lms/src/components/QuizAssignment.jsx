@@ -1,61 +1,264 @@
-import { FileText, Upload, ExternalLink, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Upload, CheckCircle2 } from "lucide-react";
 
 export default function QuizAssignment({
+  courseName,
   assignments = [],
   quizzes = [],
   submittedAssignments = [],
-  submittedQuizzes = []
+  submittedQuizzes = [],
+  studentId
 }) {
 
 
-const isAssignmentSubmitted=(id)=>{
+const [uploadedAssignments,setUploadedAssignments]=useState(
+submittedAssignments
+);
 
-return submittedAssignments.some(
-(item)=>item.assignmentId===id
+const [uploadedQuizzes,setUploadedQuizzes]=useState(
+submittedQuizzes
+);
+
+
+
+const checkAssignmentSubmitted=(id)=>{
+
+return uploadedAssignments.some(
+item=>
+item.assignmentId===id ||
+item.assignmentId?._id===id
 )
 
 }
 
 
 
-const isQuizSubmitted=(id)=>{
+const checkQuizSubmitted=(id)=>{
 
-return submittedQuizzes.some(
-(item)=>item.quizId===id
+return uploadedQuizzes.some(
+item=>
+item.quizId===id ||
+item.quizId?._id===id
 )
 
 }
 
 
 
-return (
+
+const uploadAssignment=async(e,assignmentId)=>{
+
+
+const file=e.target.files[0];
+
+
+if(!file)
+return;
+
+
+const formData=new FormData();
+
+
+formData.append(
+"assignmentId",
+assignmentId
+);
+
+
+formData.append(
+"studentId",
+studentId
+);
+
+
+formData.append(
+"pdf",
+file
+);
+
+
+
+try{
+
+
+const response=await fetch(
+"http://localhost:4000/api/uploadAssignment",
+{
+method:"POST",
+body:formData
+}
+);
+
+
+const data=await response.json();
+
+
+
+if(response.ok){
+
+
+setUploadedAssignments([
+...uploadedAssignments,
+data.uploadAssignment
+]);
+
+
+alert("Assignment Uploaded Successfully");
+
+
+}
+else{
+
+alert(data.message);
+
+}
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+}
+
+
+
+
+const uploadQuiz=async(e,quizId)=>{
+
+
+const file=e.target.files[0];
+
+
+if(!file)
+return;
+
+
+
+const formData=new FormData();
+
+
+formData.append(
+"quizId",
+quizId
+);
+
+
+formData.append(
+"studentId",
+studentId
+);
+
+
+formData.append(
+"pdf",
+file
+);
+
+
+
+try{
+
+
+const response=await fetch(
+"http://localhost:4000/api/uploadingQuiz",
+{
+method:"POST",
+body:formData
+}
+);
+
+
+const data=await response.json();
+
+
+
+if(response.ok){
+
+
+setUploadedQuizzes([
+...uploadedQuizzes,
+data.uploadQuiz
+]);
+
+
+alert("Quiz Uploaded Successfully");
+
+
+}
+else{
+
+alert(data.message);
+
+}
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+}
+
+
+
+
+return(
+
 
 <div className="space-y-8">
 
 
+
 {/* Assignments */}
 
+
 <div>
+
 
 <h2 className="text-xl font-semibold mb-4">
 Assignments
 </h2>
 
 
+
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
 
 {
+
 assignments.map((assignment)=>{
 
 
-const assignmentData =
-JSON.parse(assignment.assignmentQuestions);
+let assignmentInfo={};
+
+
+try{
+
+assignmentInfo=
+JSON.parse(
+assignment.assignmentQuestions
+);
+
+}
+catch(error){
+
+console.log(error);
+
+}
 
 
 
-const submitted =
-isAssignmentSubmitted(assignment._id);
+const submitted=
+checkAssignmentSubmitted(
+assignment._id
+);
 
 
 
@@ -64,39 +267,34 @@ return(
 
 <div
 key={assignment._id}
-className="bg-white border rounded-lg p-6"
+className="bg-white border rounded-lg p-6 shadow-sm"
 >
 
 
-<div className="flex items-center gap-3 mb-4">
-
-<FileText className="text-blue-600"/>
-
-<h3 className="font-semibold">
-{assignmentData.title}
+<h3 className="text-lg font-semibold">
+{assignmentInfo.title}
 </h3>
 
-</div>
+
+<p className="text-gray-600 mt-1"> 
+{courseName}
+</p>
 
 
-
-<p className="text-gray-600 mb-5">
-Course Assignment
+<p className="text-blue-600 mt-2">
+Total Marks : {assignmentInfo.total_marks}
 </p>
 
 
 
-<div className="flex gap-3">
+<div className="flex gap-3 mt-6">
 
 
 <a
-
 href={assignment.assignmentFile}
-
 target="_blank"
-
+rel="noreferrer"
 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-
 >
 
 <ExternalLink size={18}/>
@@ -107,10 +305,33 @@ Open Assignment
 
 
 
+<input
+type="file"
+accept="application/pdf"
+hidden
+id={`assignment-${assignment._id}`}
+onChange={(e)=>
+uploadAssignment(
+e,
+assignment._id
+)}
+/>
+
+
 
 <button
 
 disabled={submitted}
+
+onClick={()=>{
+
+document
+.getElementById(
+`assignment-${assignment._id}`
+)
+.click()
+
+}}
 
 className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
 submitted
@@ -124,17 +345,27 @@ submitted
 
 
 {
+
 submitted
+
 ?
+
 <>
-<CheckCircle size={18}/>
+
+<CheckCircle2 size={18}/>
 Submitted
+
 </>
+
 :
+
 <>
+
 <Upload size={18}/>
 Upload Submission
+
 </>
+
 }
 
 
@@ -151,12 +382,12 @@ Upload Submission
 
 )
 
+
 })
 
 }
 
 
-
 </div>
 
 
@@ -167,17 +398,15 @@ Upload Submission
 
 
 
+{/* Quiz */}
 
-{/* Quizzes */}
 
 
 <div>
 
 
 <h2 className="text-xl font-semibold mb-4">
-
 Quizzes
-
 </h2>
 
 
@@ -185,19 +414,34 @@ Quizzes
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
 
-
 {
 
-quizzes.map((quiz)=>{
+quizzes.map((quiz,index)=>{
 
 
-const quizData =
-JSON.parse(quiz.quizQuestions);
+let quizInfo={};
+
+
+try{
+
+quizInfo=
+JSON.parse(
+quiz.quizQuestions
+)
+
+}
+catch(error){
+
+console.log(error);
+
+}
 
 
 
-const submitted =
-isQuizSubmitted(quiz._id);
+const submitted=
+checkQuizSubmitted(
+quiz._id
+);
 
 
 
@@ -205,37 +449,46 @@ return(
 
 
 <div
-
 key={quiz._id}
-
-className="bg-white border rounded-lg p-6"
-
+className="bg-white border rounded-lg p-6 shadow-sm"
 >
 
 
-<div className="flex items-center gap-3 mb-4">
-
-
-<FileText className="text-purple-600"/>
-
-
-<h3 className="font-semibold">
-
-{quizData.title}
-
+<h3 className="text-lg font-semibold">
+Quiz {index+1}
 </h3>
 
 
-</div>
 
-
-
-<p className="text-gray-600 mb-5">
-
-Course Quiz
-
+<p className="text-gray-600 mt-1">
+{courseName}
 </p>
 
+
+<p className="text-blue-600 mt-2">
+Total Marks : {quizInfo.total_marks}
+</p>
+
+
+
+<input
+
+type="file"
+
+accept="application/pdf"
+
+hidden
+
+id={`quiz-${quiz._id}`}
+
+onChange={(e)=>
+uploadQuiz(
+e,
+quiz._id
+)
+}
+
+/>
 
 
 
@@ -243,7 +496,17 @@ Course Quiz
 
 disabled={submitted}
 
-className={`px-5 py-2 rounded-lg ${
+onClick={()=>{
+
+document
+.getElementById(
+`quiz-${quiz._id}`
+)
+.click()
+
+}}
+
+className={`flex items-center gap-2 mt-6 px-4 py-2 rounded-lg ${
 submitted
 ?
 "bg-gray-300 cursor-not-allowed"
@@ -255,11 +518,23 @@ submitted
 
 
 {
+
 submitted
+
 ?
+
 "Already Submitted"
+
 :
-"Start Quiz"
+
+<>
+
+<Upload size={18}/>
+
+Quiz Submission
+
+</>
+
 }
 
 
@@ -275,6 +550,7 @@ submitted
 
 })
 
+
 }
 
 
@@ -287,7 +563,8 @@ submitted
 
 
 </div>
+
 
 )
 
-}
+} 

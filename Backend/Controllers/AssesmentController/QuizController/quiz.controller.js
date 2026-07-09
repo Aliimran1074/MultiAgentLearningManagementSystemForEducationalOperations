@@ -2,7 +2,7 @@ const quizModel = require("../../../Models/QuizModel/quiz.model")
 const subscriptionModel = require("../../../Models/SuperAdminModels/subscription.model")
 const staffModel= require('../../../Models/UserModels/staff.model')
 const courseModel = require('../../../Models/CourseModels/course.model')
-const {courseEnrollmentModel} = require('../../../Models/CourseModels/courseEnrollment.model')
+const courseEnrollmentModel = require('../../../Models/CourseModels/courseEnrollment.model')
 const quizUploadingModel = require('../../../Models/QuizModel/quizUploading.model')
 const {imageKitConfig} =require('../../../ImageKit.IO Setup/setup')
 
@@ -144,7 +144,7 @@ const quizUploading= async(req,res)=>{
         }
         
         // check student already upload Quiz or not
-        const checkAlreadyQuizUploading = await quizUploadingModel.find({assigmnetId:quizId,studentId:studentId})
+        const checkAlreadyQuizUploading = await quizUploadingModel.find({quizId:quizId,studentId:studentId})
 
         console.log("Already Quiz Uploading",checkAlreadyQuizUploading.length)
         if(checkAlreadyQuizUploading.length>0){
