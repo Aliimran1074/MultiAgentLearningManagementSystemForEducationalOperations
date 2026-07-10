@@ -6,9 +6,9 @@ const studentRegistrationSchema= new mongoose.Schema ({
         required:true
     },
     instituteId :{
- type: mongoose.Schema.Types.ObjectId,
-  ref: "instituteModel",
-  required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "instituteModel",
+    required: true
     },
     cnicNo:
     {
