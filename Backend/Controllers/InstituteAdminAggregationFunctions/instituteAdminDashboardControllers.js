@@ -5,7 +5,7 @@ const courseModel = require("../../Models/CourseModels/course.model");
 const assignmentModel = require("../../Models/Assignment/assignment.model");
 const quizModel = require("../../Models/QuizModel/quiz.model");
 const subscriptionModel = require("../../Models/SuperAdminModels/subscription.model");
-
+const instituteModel = require('../../Models/InstituteBatchesClasses/Institute.model')
 
 const instituteDashboardAggregation = async (instituteId) => {
 
@@ -30,7 +30,8 @@ const instituteDashboardAggregation = async (instituteId) => {
         courseStats,
         assignmentStats,
         quizStats,
-        subscriptionStats
+        subscriptionStats,
+         instituteInfo
     ] = await Promise.all([
 
 
@@ -173,14 +174,29 @@ const instituteDashboardAggregation = async (instituteId) => {
                     planName:"$plan.subscriptionName"
                 }
             }
-        ])
+        ]),
+            instituteModel.aggregate([
+    {
+        $match:{
+            _id: instituteObjectId
+        }
+    },
+    {
+        $project:{
+            name:1
+        }
+    }
+])
 
-    ]);
 
+    ])
 
 
     return {
 
+         institute:{
+        name: instituteInfo[0]?.name || ""
+    },
         students:{
             total: studentStats[0]?.totalStudents || 0,
             studying: studentStats[0]?.studying || 0

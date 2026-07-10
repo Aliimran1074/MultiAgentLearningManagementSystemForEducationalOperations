@@ -26,8 +26,8 @@ export default function App() {
 
   const [activeView,setActiveView] = useState("dashboard");
 
-  const [selectedSession,setSelectedSession] = 
-  useState("Session A 2025");
+  // const [selectedSession,setSelectedSession] = 
+  // useState("Session A 2025");
 
 
   const [sidebarOpen,setSidebarOpen] =
@@ -292,40 +292,10 @@ activeView===item.id
 
 </button>
 
-
-
-<select
-
-value={selectedSession}
-
-onChange={(e)=>
-setSelectedSession(e.target.value)
-}
-
-className="border rounded p-2"
-
->
-
-
-<option>
-Session A 2025
-</option>
-
-
-<option>
-Batch B 2025
-</option>
-
-
-</select>
-
-
-
-
 <h1 className="font-bold">
-
-Massachusetts Institute of Technology
-
+{
+ dashboardData?.institute?.name || "Institute Dashboard"
+}
 </h1>
 
 
@@ -338,27 +308,21 @@ Massachusetts Institute of Technology
 <div className="flex gap-3 items-center">
 
 
-<div className="bg-red-50 border border-red-400 p-2 rounded flex gap-2">
+<div className="bg-white border rounded-lg p-2 flex gap-2 items-center">
 
+<GraduationCap className="text-blue-600"/>
 
-<AlertCircle className="text-red-600"/>
-
-
-<span className="text-red-600">
+<span className="text-gray-700 font-medium">
 
 {
 dashboardData?.students?.total || 0
 }
- Students
+&nbsp; Student
 
 </span>
 
-
 </div>
 
-
-
-<Bell/>
 
 
 </div>
@@ -384,8 +348,6 @@ dashboardData?.students?.total || 0
 activeView==="dashboard" &&
 
 <AgentCommandCenter
-
-selectedSession={selectedSession}
 
 dashboardData={dashboardData}
 
@@ -420,7 +382,6 @@ activeView==="master-content" &&
 
 <MasterContentLibrary
 
-selectedSession={selectedSession}
 
 />
 
@@ -435,8 +396,6 @@ selectedSession={selectedSession}
 activeView==="faculty" &&
 
 <FacultyDirectory
-
-selectedSession={selectedSession}
 
 dashboardData={dashboardData}
 
@@ -453,7 +412,7 @@ activeView==="students" &&
 
 <StudentProgress
 
-selectedSession={selectedSession}
+
 
 dashboardData={dashboardData}
 

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import axios from "axios";
+import {useEffect,useState} from "react";
 import { 
   Search, 
   Filter, 
@@ -14,106 +15,64 @@ import {
 export default function MasterContentLibrary({ selectedSession }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [contentLibrary,setContentLibrary]=useState([]);
+const [loading,setLoading]=useState(true);
 
-  // Mock content library data
-  const contentLibrary = [
-    {
-      id: 1,
-      courseCode: 'CS-301',
-      courseTitle: 'Data Structures and Algorithms',
-      teacher: 'Dr. Sarah Mitchell',
-      contentType: 'Lecture Notes',
-      uploadDate: '2025-02-01',
-      lifecycleStatus: 'Live',
-      aiProcessingTime: '2 min 15 sec',
-      studentAccess: 245,
-      lastUpdated: '2025-02-02'
-    },
-    {
-      id: 2,
-      courseCode: 'PHY-201',
-      courseTitle: 'Quantum Mechanics',
-      teacher: 'Prof. James Chen',
-      contentType: 'Quiz Module',
-      uploadDate: '2025-02-02',
-      lifecycleStatus: 'Processing by AI',
-      aiProcessingTime: 'In progress',
-      studentAccess: 0,
-      lastUpdated: '2025-02-03'
-    },
-    {
-      id: 3,
-      courseCode: 'CHEM-150',
-      courseTitle: 'Organic Chemistry',
-      teacher: 'Dr. Emily Roberts',
-      contentType: 'Lab Assignment',
-      uploadDate: '2025-01-28',
-      lifecycleStatus: 'Live',
-      aiProcessingTime: '1 min 45 sec',
-      studentAccess: 198,
-      lastUpdated: '2025-01-30'
-    },
-    {
-      id: 4,
-      courseCode: 'MATH-202',
-      courseTitle: 'Advanced Calculus',
-      teacher: 'Prof. Michael Brown',
-      contentType: 'Exam',
-      uploadDate: '2025-02-03',
-      lifecycleStatus: 'Live',
-      aiProcessingTime: '3 min 10 sec',
-      studentAccess: 312,
-      lastUpdated: '2025-02-03'
-    },
-    {
-      id: 5,
-      courseCode: 'ENG-101',
-      courseTitle: 'English Literature',
-      teacher: 'Dr. Lisa Anderson',
-      contentType: 'Study Guide',
-      uploadDate: '2025-01-30',
-      lifecycleStatus: 'Draft',
-      aiProcessingTime: 'Not started',
-      studentAccess: 0,
-      lastUpdated: '2025-01-30'
-    },
-    {
-      id: 6,
-      courseCode: 'CS-401',
-      courseTitle: 'Machine Learning',
-      teacher: 'Prof. David Lee',
-      contentType: 'Project Brief',
-      uploadDate: '2025-02-01',
-      lifecycleStatus: 'Processing by AI',
-      aiProcessingTime: 'In progress',
-      studentAccess: 0,
-      lastUpdated: '2025-02-02'
-    },
-    {
-      id: 7,
-      courseCode: 'BIO-250',
-      courseTitle: 'Cell Biology',
-      teacher: 'Dr. Rachel Green',
-      contentType: 'Video Lecture',
-      uploadDate: '2025-01-29',
-      lifecycleStatus: 'Live',
-      aiProcessingTime: '5 min 30 sec',
-      studentAccess: 276,
-      lastUpdated: '2025-01-31'
-    },
-    {
-      id: 8,
-      courseCode: 'STAT-301',
-      courseTitle: 'Probability Theory',
-      teacher: 'Prof. Thomas White',
-      contentType: 'Quiz',
-      uploadDate: '2025-02-02',
-      lifecycleStatus: 'Live',
-      aiProcessingTime: '2 min 05 sec',
-      studentAccess: 189,
-      lastUpdated: '2025-02-03'
-    }
-  ];
+
+const instituteId =
+"6a02e3cf54202521c3af340e";
+
+useEffect(()=>{
+
+
+const getContent=async()=>{
+
+
+try{
+
+
+const response =
+await axios.get(
+`http://localhost:4000/api/masterContent/${instituteId}`
+);
+
+
+console.log(
+"Master Content:",
+response.data
+);
+
+
+
+setContentLibrary(
+response.data.data
+);
+
+
+}
+catch(error){
+
+console.log(
+"Content Error",
+error
+);
+
+
+}
+finally{
+
+setLoading(false);
+
+}
+
+
+}
+
+
+getContent();
+
+
+},[]);
 
   // Filter content based on search and status
   const filteredContent = contentLibrary.filter(item => {
@@ -169,6 +128,11 @@ export default function MasterContentLibrary({ selectedSession }) {
     draft: contentLibrary.filter(c => c.lifecycleStatus === 'Draft').length
   };
 
+  if(loading){
+
+return <h1>Loading Content...</h1>
+
+}
   return (
     <div className="space-y-6">
       {/* Page Header */}

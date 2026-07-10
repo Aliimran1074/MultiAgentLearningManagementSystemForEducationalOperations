@@ -1,187 +1,56 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import axios from 'axios';
+
 import { 
   Search, 
   Filter, 
   User, 
   CheckCircle, 
   AlertCircle, 
-  Calendar,
-  TrendingUp,
-  TrendingDown,
   MessageSquare,
   Clock,
-  Award
+  Award,
+  TrendingDown,
+  TrendingUp
 } from 'lucide-react';
 
 export default function StudentProgress({ selectedSession }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [counselingFilter, setCounselingFilter] = useState('all');
   const [performanceFilter, setPerformanceFilter] = useState('all');
+const [studentData, setStudentData] = useState([]);
+const [loading, setLoading] = useState(true);
 
-  // Mock student data
-  const studentData = [
-    {
-      id: 1,
-      name: 'Alex Thompson',
-      enrollmentId: 'MIT-2024-CS-001',
-      program: 'Computer Science - Year 2',
-      attendance: 92,
-      currentAverage: 38,
-      coursesEnrolled: 6,
-      completedAssignments: 18,
-      totalAssignments: 24,
-      counselingStatus: 'Intervention Required',
-      lastMeeting: '2025-02-02',
-      nextMeeting: 'Today, 2:30 PM',
-      trend: -8.5,
-      flaggedIssues: ['Failed last 3 assignments', 'Low quiz performance']
-    },
-    {
-      id: 2,
-      name: 'Maria Rodriguez',
-      enrollmentId: 'MIT-2025-PHY-045',
-      program: 'Physics - Year 1',
-      attendance: 88,
-      currentAverage: 42,
-      coursesEnrolled: 5,
-      completedAssignments: 15,
-      totalAssignments: 20,
-      counselingStatus: 'Meeting Scheduled',
-      lastMeeting: '2025-01-28',
-      nextMeeting: 'Tomorrow, 10:00 AM',
-      trend: -5.2,
-      flaggedIssues: ['Struggling with Quantum Mechanics', 'Missed 2 lab sessions']
-    },
-    {
-      id: 3,
-      name: 'Kevin Patel',
-      enrollmentId: 'MIT-2023-MATH-089',
-      program: 'Mathematics - Year 3',
-      attendance: 76,
-      currentAverage: 35,
-      coursesEnrolled: 5,
-      completedAssignments: 12,
-      totalAssignments: 22,
-      counselingStatus: 'Urgent - No Meeting',
-      lastMeeting: '2025-01-15',
-      nextMeeting: 'Not scheduled',
-      trend: -12.3,
-      flaggedIssues: ['Calculus fundamentals weak', 'Low engagement rate', 'Poor attendance']
-    },
-    {
-      id: 4,
-      name: 'Sophie Chen',
-      enrollmentId: 'MIT-2024-BIO-112',
-      program: 'Biology - Year 2',
-      attendance: 94,
-      currentAverage: 47,
-      coursesEnrolled: 6,
-      completedAssignments: 21,
-      totalAssignments: 24,
-      counselingStatus: 'Meeting Scheduled',
-      lastMeeting: '2025-02-01',
-      nextMeeting: 'Today, 4:00 PM',
-      trend: -3.8,
-      flaggedIssues: ['Cell biology comprehension issues', 'Lab report quality declining']
-    },
-    {
-      id: 5,
-      name: 'Jordan Williams',
-      enrollmentId: 'MIT-2025-CS-156',
-      program: 'Data Science - Year 1',
-      attendance: 82,
-      currentAverage: 41,
-      coursesEnrolled: 6,
-      completedAssignments: 16,
-      totalAssignments: 23,
-      counselingStatus: 'Intervention Required',
-      lastMeeting: '2025-01-25',
-      nextMeeting: 'Not scheduled',
-      trend: -6.7,
-      flaggedIssues: ['Programming assignments incomplete', 'Algorithm design struggles']
-    },
-    {
-      id: 6,
-      name: 'Emma Davis',
-      enrollmentId: 'MIT-2024-CHEM-078',
-      program: 'Chemistry - Year 2',
-      attendance: 96,
-      currentAverage: 85,
-      coursesEnrolled: 5,
-      completedAssignments: 19,
-      totalAssignments: 20,
-      counselingStatus: 'No Action Needed',
-      lastMeeting: null,
-      nextMeeting: null,
-      trend: 4.5,
-      flaggedIssues: []
-    },
-    {
-      id: 7,
-      name: 'Liam Johnson',
-      enrollmentId: 'MIT-2023-ENG-034',
-      program: 'Engineering - Year 3',
-      attendance: 91,
-      currentAverage: 78,
-      coursesEnrolled: 6,
-      completedAssignments: 22,
-      totalAssignments: 24,
-      counselingStatus: 'No Action Needed',
-      lastMeeting: null,
-      nextMeeting: null,
-      trend: 3.2,
-      flaggedIssues: []
-    },
-    {
-      id: 8,
-      name: 'Olivia Martinez',
-      enrollmentId: 'MIT-2024-PHY-098',
-      program: 'Physics - Year 2',
-      attendance: 89,
-      currentAverage: 72,
-      coursesEnrolled: 5,
-      completedAssignments: 18,
-      totalAssignments: 21,
-      counselingStatus: 'No Action Needed',
-      lastMeeting: null,
-      nextMeeting: null,
-      trend: 2.8,
-      flaggedIssues: []
-    },
-    {
-      id: 9,
-      name: 'Noah Brown',
-      enrollmentId: 'MIT-2025-CS-201',
-      program: 'Computer Science - Year 1',
-      attendance: 98,
-      currentAverage: 91,
-      coursesEnrolled: 6,
-      completedAssignments: 23,
-      totalAssignments: 23,
-      counselingStatus: 'No Action Needed',
-      lastMeeting: null,
-      nextMeeting: null,
-      trend: 7.1,
-      flaggedIssues: []
-    },
-    {
-      id: 10,
-      name: 'Ava Wilson',
-      enrollmentId: 'MIT-2024-MATH-145',
-      program: 'Mathematics - Year 2',
-      attendance: 85,
-      currentAverage: 48,
-      coursesEnrolled: 5,
-      completedAssignments: 16,
-      totalAssignments: 22,
-      counselingStatus: 'Meeting Scheduled',
-      lastMeeting: '2025-01-30',
-      nextMeeting: 'Feb 5, 11:00 AM',
-      trend: -4.2,
-      flaggedIssues: ['Struggling with advanced topics', 'Needs additional support']
+const instituteId = "6a02e3cf54202521c3af340e";
+
+useEffect(() => {
+  const getStudentProgress = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/studentProgress/${instituteId}`
+      );
+
+      console.log("========== Student Progress API ==========");
+      console.log(response);
+      console.log("Response Data:", response.data);
+      console.log("Student Array:", response.data.data.students);
+
+      setStudentData(response.data.data.students || []);
+    } catch (error) {
+      console.log("Student Progress Error");
+      console.log(error);
+
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Backend Response:", error.response.data);
+      }
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
+  getStudentProgress();
+}, []);
   // Filter students
   const filteredStudents = studentData.filter(student => {
     const matchesSearch = 
@@ -290,19 +159,19 @@ export default function StudentProgress({ selectedSession }) {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">Meetings Scheduled</p>
-            <Calendar className="w-5 h-5 text-blue-600" />
+            {/* <Calendar className="w-5 h-5 text-blue-600" /> */}
           </div>
           <p className="text-2xl font-bold text-blue-600">{stats.meetingsScheduled}</p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-2">
+         {/* <div className="bg-white rounded-lg border border-gray-200 p-4"> */}
+          {/* <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-gray-600">Avg Attendance</p>
             <Award className="w-5 h-5 text-green-600" />
-          </div>
-          <p className="text-2xl font-bold text-green-600">{stats.avgAttendance}%</p>
-        </div>
-      </div>
+          </div> */}
+          {/* <p className="text-2xl font-bold text-green-600">{stats.avgAttendance}%</p> */}
+        {/* </div> */}
+      </div> 
 
       {/* Filters */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -359,12 +228,12 @@ export default function StudentProgress({ selectedSession }) {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Student
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Program
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                </th> */}
+                {/* <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Attendance
-                </th>
+                </th> */}
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Current Average
                 </th>
@@ -374,17 +243,17 @@ export default function StudentProgress({ selectedSession }) {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Counseling Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Next Meeting
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredStudents.map((student) => {
                 const counselingBadge = getCounselingBadge(student.counselingStatus);
                 const trendPositive = student.trend > 0;
-                const completionRate = Math.round((student.completedAssignments / student.totalAssignments) * 100);
-                
+                // const completionRate = Math.round((student.completedAssignments / student.totalAssignments) * 100);
+               const completionRate = 75; 
                 return (
                   <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
@@ -400,11 +269,11 @@ export default function StudentProgress({ selectedSession }) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    {/* <td className="px-6 py-4">
                       <p className="text-sm text-gray-900">{student.program}</p>
                       <p className="text-xs text-gray-600">{student.coursesEnrolled} courses enrolled</p>
-                    </td>
-                    <td className="px-6 py-4">
+                    </td> */}
+                    {/* <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 max-w-[60px]">
                           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -420,24 +289,16 @@ export default function StudentProgress({ selectedSession }) {
                         </div>
                         <span className="text-sm font-medium text-gray-900">{student.attendance}%</span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-lg font-bold ${getPerformanceColor(student.currentAverage)}`}>
-                          {student.currentAverage}%
-                        </span>
-                        <div className={`flex items-center gap-1 text-xs font-medium ${
-                          trendPositive ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {trendPositive ? (
-                            <TrendingUp className="w-3 h-3" />
-                          ) : (
-                            <TrendingDown className="w-3 h-3" />
-                          )}
-                          <span>{Math.abs(student.trend)}%</span>
-                        </div>
-                      </div>
-                    </td>
+  <span 
+    className={`text-lg font-bold ${
+      getPerformanceColor(student.currentAverage)
+    }`}
+  >
+    {student.currentAverage || 0}%
+  </span>
+</td>
                     <td className="px-6 py-4">
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -461,16 +322,15 @@ export default function StudentProgress({ selectedSession }) {
                         <span className="text-xs font-medium">{student.counselingStatus}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    {/* <td className="px-6 py-4">
                       {student.nextMeeting ? (
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-gray-900">{student.nextMeeting}</span>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-500">-</span>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}
