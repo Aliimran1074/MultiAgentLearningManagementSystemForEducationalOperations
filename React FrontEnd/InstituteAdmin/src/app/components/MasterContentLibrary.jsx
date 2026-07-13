@@ -43,11 +43,17 @@ response.data
 );
 
 
-
 setContentLibrary(
-response.data.data
+ response.data.data
 );
 
+console.log("Content Array:", response.data.data);
+
+response.data.data.forEach((item,index)=>{
+  if(!item.courseTitle || !item.courseCode || !item.teacher){
+    console.log("Missing Field at index:", index, item);
+  }
+});
 
 }
 catch(error){
@@ -75,19 +81,29 @@ getContent();
 },[]);
 
   // Filter content based on search and status
-  const filteredContent = contentLibrary.filter(item => {
-    const matchesSearch = 
-      item.courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.courseCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.teacher.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || item.lifecycleStatus === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+
+  console.log("State Content Library:", contentLibrary);
+ 
+ const filteredContent = contentLibrary.filter(item => {
+
+  const courseTitle = item.courseTitle || "";
+  const courseCode = item.courseCode || "";
+  const teacher = item.teacher || "";
+
+  const matchesSearch =
+    courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    courseCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    teacher.toLowerCase().includes(searchQuery.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "all" ||
+    item.lifecycleStatus === statusFilter;
+
+  return matchesSearch && matchesStatus; 
+});
 
   // Get status badge styling
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status) => {   
     switch(status) {
       case 'Live':
         return {
@@ -228,15 +244,7 @@ return <h1>Loading Content...</h1>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Lifecycle Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  AI Processing
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  Student Access
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  Last Updated
-                </th>
+            
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -244,7 +252,7 @@ return <h1>Loading Content...</h1>
                 const statusBadge = getStatusBadge(item.lifecycleStatus);
                 
                 return (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-sm font-medium text-gray-900">{item.courseTitle}</p>
@@ -263,15 +271,7 @@ return <h1>Loading Content...</h1>
                         <span className="text-xs font-medium">{item.lifecycleStatus}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-gray-900">{item.aiProcessingTime}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-gray-900">{item.studentAccess}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-gray-600">{item.lastUpdated}</p>
-                    </td>
+             
                   </tr>
                 );
               })}

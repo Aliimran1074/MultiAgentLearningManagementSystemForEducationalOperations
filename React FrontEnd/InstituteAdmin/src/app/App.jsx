@@ -26,9 +26,6 @@ export default function App() {
 
   const [activeView,setActiveView] = useState("dashboard");
 
-  // const [selectedSession,setSelectedSession] = 
-  // useState("Session A 2025");
-
 
   const [sidebarOpen,setSidebarOpen] =
   useState(true);
@@ -42,9 +39,6 @@ export default function App() {
   useState(true);
 
 
-
-  // temporary institute id
-  // later login response se ayegi
 
   const instituteId =
   "6a02e3cf54202521c3af340e";
@@ -347,32 +341,21 @@ dashboardData?.students?.total || 0
 {
 activeView==="dashboard" &&
 
-<AgentCommandCenter
-
-dashboardData={dashboardData}
-
+<AgentCommandCenter 
+    instituteId={instituteId}
 />
 
 }
-
-
-
-
 
 
 {
 activeView==="agents" &&
 
-<AgentCommandCenter
-
-selectedSession={selectedSession}
-
-dashboardData={dashboardData}
-
+<AgentCommandCenter 
+    instituteId={instituteId}
 />
 
 }
-
 
 
 

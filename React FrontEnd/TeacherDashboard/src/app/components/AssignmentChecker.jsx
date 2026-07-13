@@ -20,7 +20,7 @@ export default function AssignmentChecker() {
       try {
 
         const res = await fetch(
-          `http://localhost:3000/api/teacherDashboard/${teacherId}/assignmentSubmission`
+          `http://localhost:4000/api/teacherDashboard/${teacherId}/assignmentSubmission`
         );
 
         const data = await res.json();
@@ -105,7 +105,7 @@ export default function AssignmentChecker() {
 
 
       const res = await fetch(
-        "http://localhost:3000/api/manualAssignmentMarksUploading",
+        "http://localhost:4000/api/manualAssignmentMarksUploading",
         {
           method:"PUT",
 

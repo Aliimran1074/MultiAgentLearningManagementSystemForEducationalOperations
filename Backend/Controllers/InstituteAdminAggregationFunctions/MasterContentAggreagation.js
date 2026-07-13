@@ -12,60 +12,55 @@ const instituteObjectId = new mongoose.Types.ObjectId(instituteId);
 
 
 
-const courses = await courseModel.aggregate([
+// const courses = await courseModel.aggregate([
 
-{
-    $match:{
-        instituteId: instituteObjectId
-    }
-},
-
-
-{
-    $lookup:{
-        from:"staffmodels",
-        localField:"instructorTeached",
-        foreignField:"_id",
-        as:"teacher"
-    }
-},
+// {
+//     $match:{
+//         instituteId: instituteObjectId
+//     }
+// },
 
 
-{
-    $unwind:{
-        path:"$teacher",
-        preserveNullAndEmptyArrays:true
-    }
-},
+// {
+//     $lookup:{
+//         from:"staffmodels",
+//         localField:"instructorTeached",
+//         foreignField:"_id",
+//         as:"teacher"
+//     }
+// },
 
 
-{
-    $project:{
-
-        courseTitle:"$name",
-
-        courseCode:"$deprtmentName",
-
-        teacher:{
-            $ifNull:[
-                "$teacher.name",
-                "Not Assigned"
-            ]
-        },
-
-        contentType:{
-            $literal:"Course"
-        },
-
-        lifecycleStatus:{
-            $literal:"Live"
-        }
-
-    }
-}
+// {
+//     $unwind:{
+//         path:"$teacher",
+//         preserveNullAndEmptyArrays:true
+//     }
+// },
 
 
-]);
+// {
+//     $project:{
+//         courseTitle:"$name",
+//         courseCode: "$name"
+//         teacher:{
+//             $ifNull:[
+//                 "$teacher.name",
+//                 "Not Assigned"
+//             ]
+//         },
+
+//         contentType:{
+//             $literal:"Course"
+//         },
+
+//         lifecycleStatus:{
+//             $literal:"Live"
+//         }
+//     }
+// }
+
+// ]);
 
 
 
@@ -80,7 +75,7 @@ const assignments = await assignmentModel.aggregate([
 {
     $lookup:{
         from:"coursemodels",
-        localField:"courseId",
+        localField:"course",
         foreignField:"_id",
         as:"course"
     }
@@ -93,34 +88,61 @@ const assignments = await assignmentModel.aggregate([
     }
 },
 
+{
+    $lookup:{
+        from:"staffmodels",
+        localField:"createdBy",
+        foreignField:"_id",
+        as:"teacher"
+    }
+},
+
+{
+    $unwind:{
+        path:"$teacher",
+        preserveNullAndEmptyArrays:true
+    }
+},
+
+{
+    $addFields:{
+        assignmentData:{
+            $convert:{
+                input:"$assignmentQuestions",
+                to:"object",
+                onError:{},
+                onNull:{}
+            }
+        }
+    }
+},
 
 {
     $project:{
 
         courseTitle:{
             $ifNull:[
-                "$course.name",
+                "$assignmentData.title",
                 "Assignment"
             ]
         },
 
-        courseCode:{
-            $literal:"Assignment"
-        },
+        courseCode:"$course.name",
 
         teacher:{
-            $literal:"Assigned Teacher"
+            $ifNull:[
+                "$teacher.name",
+                "Not Assigned"
+            ]
         },
-
 
         contentType:{
             $literal:"Assignment"
         },
 
-
         lifecycleStatus:{
             $literal:"Live"
-        }
+            }
 
     }
 }
@@ -136,16 +158,14 @@ const quizzes = await quizModel.aggregate([
     }
 },
 
-
 {
     $lookup:{
         from:"coursemodels",
-        localField:"courseId",
+        localField:"course",
         foreignField:"_id",
         as:"course"
     }
 },
-
 
 {
     $unwind:{
@@ -154,45 +174,51 @@ const quizzes = await quizModel.aggregate([
     }
 },
 
+{
+    $lookup:{
+        from:"staffmodels",
+        localField:"createdBy",
+        foreignField:"_id",
+        as:"teacher"
+    }
+},
+
+{
+    $unwind:{
+        path:"$teacher",
+        preserveNullAndEmptyArrays:true
+    }
+},
 
 {
     $project:{
 
-        courseTitle:{
-            $ifNull:[
-                "$course.name",
-                "Quiz"
-            ]
-        },
+        courseTitle:"$quizType",
 
-
-        courseCode:{
-            $literal:"Quiz"
-        },
-
+        courseCode:"$course.name",
 
         teacher:{
-            $literal:"Assigned Teacher"
+            $ifNull:[
+                "$teacher.name",
+                "Not Assigned"
+            ]
         },
-
 
         contentType:{
             $literal:"Quiz"
         },
-
 
         lifecycleStatus:{
             $literal:"Live"
         }
 
     }
-}
+}   
 
 ]);
 
-
 return [
-    ...courses,
+    // ...courses,
     ...assignments,
     ...quizzes
 ];

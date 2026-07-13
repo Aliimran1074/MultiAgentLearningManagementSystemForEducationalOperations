@@ -57,7 +57,7 @@ export default function AppointmentManager({ teacherData }) {
     try {
 
       await axios.post(
-        "http://localhost:3000/api/acceptAppointment",
+        "http://localhost:4000/api/acceptAppointment",
         {
           appointmentId:id
         }
@@ -98,7 +98,7 @@ export default function AppointmentManager({ teacherData }) {
     try {
 
       await axios.post(
-        "http://localhost:3000/api/rejectAppointment",
+        "http://localhost:4000/api/rejectAppointment",
         {
           appointmentId:id,
           remarks:"Teacher rejected appointment"

@@ -68,7 +68,7 @@ try{
 
 
 const response = await fetch(
-`http://localhost:3000/api/teacherAIAgents/${teacherId}`
+`http://localhost:4000/api/teacherAIAgents/${teacherId}`
 )
 
 
@@ -276,7 +276,7 @@ try{
 
 
 const response = await fetch(
-"http://localhost:3000/api/createTopic",
+"http://localhost:4000/api/createTopic",
 {
 
 method:"POST",
@@ -369,7 +369,7 @@ try{
 
 const response = await fetch(
 
-"http://localhost:3000/api/quizInput",
+"http://localhost:4000/api/quizInput",
 
 {
 
