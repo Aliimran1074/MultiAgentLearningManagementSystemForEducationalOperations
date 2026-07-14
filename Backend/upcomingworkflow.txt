@@ -201,3 +201,7 @@ master content me assignment or quiz ka title show ni horaha or teacher ka naam 
 
 14/7/2026 
 institute admin work done superadmin frontend remaining phr deploy karna bhi baki hai or login sign up bhi
+
+
+15/7/2026
+super admin ke 2 components pore karke deploy karna hai

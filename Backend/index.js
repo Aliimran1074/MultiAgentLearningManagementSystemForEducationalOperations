@@ -24,6 +24,7 @@ const counsellingRoutes = require('./Routers/counsellingRoutes')
 const teacherDashboardRoutes= require('./Routers/extraTeacherDashboardRoutes')
 const studentDashboardRoutes = require('./Routers/extraStudentDashboardRoutes')
 const instituteAdminDashboardRoutes= require('./Routers/instituteDashboardRoutes')
+const extraSuperAdminDashboardRoutes = require('./Routers/extraSuperAdminRoutes')
 const {databaseConnection}=require('./utils/db.connection')
 
 require('./Automation/superAdminAutoReportCreation')
@@ -58,6 +59,7 @@ app.use('/api',counsellingRoutes)
 app.use('/api',teacherDashboardRoutes)
 app.use('/api',studentDashboardRoutes)
 app.use('/api',instituteAdminDashboardRoutes)
+app.use('/api',extraSuperAdminDashboardRoutes)
 const port=process.env.Port
 
 // assignmentCreationAgent()

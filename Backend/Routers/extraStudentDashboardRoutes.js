@@ -3,4 +3,4 @@ const {studentDashboardInfo} = require('../Controllers/StudentDashboardExtraCont
 
 router.get("/studentDashboardInfo/:studentId",studentDashboardInfo)
 
-module.exports = router
+module.exports = router 

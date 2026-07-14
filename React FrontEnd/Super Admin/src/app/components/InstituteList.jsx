@@ -68,7 +68,7 @@ export function InstituteList() {
 
   const detailsOfAllSubscriptionPlans = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/getAllSubscriptionPlanDetails")
+      const response = await fetch("http://localhost:4000/api/getAllSubscriptionPlanDetails")
       const data = await response.json()
       if (!response.ok) {
         console.log("Server error while fetching all plan details")
@@ -91,7 +91,7 @@ export function InstituteList() {
 
   const getInfoOfAvailableInstitutes = async () => {
     try {
-      const gettingInfoOfInstituteFromServer = await fetch("http://localhost:3000/api/allInstituteInfo")
+      const gettingInfoOfInstituteFromServer = await fetch("http://localhost:4000/api/allInstituteInfo")
       const data = await gettingInfoOfInstituteFromServer.json()
       if (!gettingInfoOfInstituteFromServer.ok) {
         console.log("Server error while fetching institutes")
@@ -119,7 +119,7 @@ export function InstituteList() {
         console.log("Please Write contact no consist of 11 numbers")
       }
       else{
-      const response = await fetch("http://localhost:3000/api/instituteCreation",{
+      const response = await fetch("http://localhost:4000/api/instituteCreation",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -307,11 +307,7 @@ export function InstituteList() {
 
             <div className="flex justify-between items-center pt-2">
               <Badge variant="outline" className="text-[10px]">{inst.scopeType}</Badge>
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm" className="h-8 w-8 p-0"><Eye className="w-4 h-4" /></Button>
-                <Button variant="secondary" size="sm" className="h-8 w-8 p-0"><Edit className="w-4 h-4" /></Button>
-                <Button variant="secondary" size="sm" className="h-8 w-8 p-0 text-red-600"><Trash2 className="w-4 h-4" /></Button>
-              </div>
+            
             </div>
           </Card>
         ))}
@@ -328,7 +324,6 @@ export function InstituteList() {
                 <TableHead>Status</TableHead>
                 <TableHead>Usage</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -365,11 +360,7 @@ export function InstituteList() {
                     </TableCell>
                     <TableCell className="font-bold text-gray-900">{institute.contactNo}</TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600"><Eye className="w-4 h-4" /></Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600"><Edit className="w-4 h-4" /></Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"><Trash2 className="w-4 h-4" /></Button>
-                      </div>
+                     
                     </TableCell>
                   </TableRow>
                 ))
