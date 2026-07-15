@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express =require('express')
 const app =express()
-const cors = require('cors')
+const cors = require('cors') 
 const counterRoutes = require ('./Routers/counterRoutes')
 const departmentRoutes = require('./Routers/departmentRouter')
 const studentsRoutes = require('./Routers/studentRouters')

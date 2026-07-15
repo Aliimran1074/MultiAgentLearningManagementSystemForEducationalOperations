@@ -205,3 +205,6 @@ institute admin work done superadmin frontend remaining phr deploy karna bhi bak
 
 15/7/2026
 super admin ke 2 components pore karke deploy karna hai
+
+16/7/2026
+DB connection or deployment per kaam pora karna hai

@@ -3,15 +3,15 @@ import { DashboardOverview } from './components/DashboardOverview';
 import { InstituteList } from './components/InstituteList';
 import { ReportSection } from './components/ReportSection';
 import { SubscriptionManagement } from './components/SubscriptionManagement';
-import { UserManagement } from './components/UserManagement';
-import { Settings } from './components/Settings';
+// import { UserManagement } from './components/UserManagement';
+// import { Settings } from './components/Settings';
 import { 
   LayoutDashboard, 
   Building2, 
   FileText, 
   CreditCard, 
   Users, 
-  Settings as SettingsIcon,
+  // Settings as SettingsIcon,
   Menu,
   X
 } from 'lucide-react';
@@ -25,8 +25,8 @@ export default function App() {
     { id: 'institutes', label: 'Institutes', icon: Building2 },
     { id: 'subscriptions', label: 'Subscriptions', icon: CreditCard },
     { id: 'reports', label: 'Reports', icon: FileText },
-    { id: 'users', label: 'User Management', icon: Users },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    // { id: 'users', label: 'User Management', icon: Users },
+    // { id: 'settings', label: 'Settings', icon: SettingsIcon },
   ];
 
   return (
@@ -84,7 +84,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">Admin User</p>
-                <p className="text-xs text-gray-500">admin@dashboard.com</p>
+                {/* <p className="text-xs text-gray-500">admin@dashboard.com</p> */}
               </div>
               
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
@@ -107,8 +107,8 @@ export default function App() {
           {activeTab === 'institutes' && <InstituteList />}
           {activeTab === 'subscriptions' && <SubscriptionManagement />}
           {activeTab === 'reports' && <ReportSection />}
-          {activeTab === 'users' && <UserManagement />}
-          {activeTab === 'settings' && <Settings />}
+          {/* {activeTab === 'users' && <UserManagement />} */}
+          {/* {activeTab === 'settings' && <Settings />} */}
         </main>
       </div>
 

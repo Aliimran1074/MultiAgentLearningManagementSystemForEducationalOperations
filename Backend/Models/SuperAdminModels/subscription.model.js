@@ -5,7 +5,7 @@ const subscriptionSchema = new mongoose.Schema({
     instituteId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'InstituteModel'
+        ref: 'instituteModel'
     },
     planId: {
         type: mongoose.Schema.Types.ObjectId,
