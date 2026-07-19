@@ -41,6 +41,23 @@ app.use(cors())
 app.get("/", (req, res) => {
     res.send("LMS Backend is Working");
 })
+
+const startServer = async () => {
+    try {
+        await databaseConnection();
+
+        app.listen(port, () => {
+            console.log("Server running on port", port);
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+startServer()
+
+
 app.use('/api',counterRoutes)
 app.use('/api',departmentRoutes)
 app.use('/api',studentsRoutes)
@@ -73,17 +90,3 @@ const port=process.env.Port
 //     console.log("App Listen on Port ",port)
 // })   
 
-const startServer = async () => {
-    try {
-        await databaseConnection();
-
-        app.listen(port, () => {
-            console.log("Server running on port", port);
-        });
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-startServer()

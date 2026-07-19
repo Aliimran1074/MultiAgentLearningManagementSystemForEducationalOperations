@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 let isConnected = false;
 
 const databaseConnection = async () => {
+    console.log("Enter in Database Connection Function")
     if (isConnected) {
-        console.log('🚀 Using existing database connection');
+        console.log(' Using existing database connection');
         return;
     }
 
