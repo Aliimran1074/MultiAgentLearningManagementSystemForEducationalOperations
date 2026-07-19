@@ -63,10 +63,23 @@ app.use('/api',instituteAdminDashboardRoutes)
 app.use('/api',extraSuperAdminDashboardRoutes)
 const port=process.env.Port
 
-// assignmentCreationAgent()
-app.listen(port,async()=>{
-    await databaseConnection()
-    console.log("App Listen on Port ",port)
-    // await autoAssignmentCreation()
-    // await checkAssignmentInput()
-})   
+
+// app.listen(port,async()=>{
+//     await databaseConnection()
+//     console.log("App Listen on Port ",port)
+// })   
+
+const startServer = async () => {
+    try {
+        await databaseConnection();
+
+        app.listen(port, () => {
+            console.log("Server running on port", port);
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+startServer()

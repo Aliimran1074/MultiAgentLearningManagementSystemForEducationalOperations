@@ -41,7 +41,7 @@ useEffect(()=>{
 const getInstructorInfo = async()=>{
 try {
     console.log("Teacher ID : ",teacherId)
-      const response = await fetch(`https://univeristy-management-system.vercel.app/api/teacherDashboardInfo/${teacherId}`)  
+      const response = await fetch(`http://localhost:4000/api/teacherDashboardInfo/${teacherId}`)  
       const data = await response.json()
       if(!data){
         console.log("Data not Found")

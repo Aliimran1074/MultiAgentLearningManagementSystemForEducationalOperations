@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 
-// Global variable connection state ko save karne ke liye (Serverless ke liye)
 let isConnected = false;
 
 const databaseConnection = async () => {
-    // Agar pehle se connected hai, to dobara connect mat karo
     if (isConnected) {
         console.log('🚀 Using existing database connection');
         return;
