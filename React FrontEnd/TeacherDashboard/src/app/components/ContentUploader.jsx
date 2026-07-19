@@ -55,7 +55,7 @@ try{
 
 
 const res = await fetch(
-`http://localhost:3000/api/teacherCourseContent/${teacherId}`
+`https://univeristy-management-system.vercel.app/api/teacherCourseContent/${teacherId}`
 );
 
 
@@ -139,7 +139,7 @@ selectedFile
 
 const res = await fetch(
 
-"http://localhost:3000/api/uploadManualContent",
+"https://univeristy-management-system.vercel.app/api/uploadManualContent",
 
 {
 method:"POST",
@@ -218,7 +218,7 @@ try{
 
 const res = await fetch(
 
-"http://localhost:3000/api/deleteCourseContent",
+"https://univeristy-management-system.vercel.app/api/deleteCourseContent",
 
 {
 method:"DELETE",

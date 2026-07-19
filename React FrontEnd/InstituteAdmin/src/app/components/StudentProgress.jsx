@@ -27,7 +27,7 @@ useEffect(() => {
   const getStudentProgress = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/studentProgress/${instituteId}`
+        `https://univeristy-management-system.vercel.app/api/studentProgress/${instituteId}`
       );
 
       console.log("========== Student Progress API ==========");

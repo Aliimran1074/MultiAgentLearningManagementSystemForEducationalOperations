@@ -21,7 +21,7 @@ const getStudentDashboardInfo=async()=>{
 try{
 
 const response=await fetch(
-`http://localhost:4000/api/studentDashboardInfo/${studentId}`
+`https://univeristy-management-system.vercel.app/api/studentDashboardInfo/${studentId}`
 );
 
 const data=await response.json();

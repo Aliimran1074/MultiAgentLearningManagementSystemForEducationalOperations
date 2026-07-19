@@ -68,7 +68,7 @@ try{
 
 
 const response = await fetch(
-`http://localhost:4000/api/teacherAIAgents/${teacherId}`
+`https://univeristy-management-system.vercel.app/api/teacherAIAgents/${teacherId}`
 )
 
 
@@ -276,7 +276,7 @@ try{
 
 
 const response = await fetch(
-"http://localhost:4000/api/createTopic",
+"https://univeristy-management-system.vercel.app/api/createTopic",
 {
 
 method:"POST",
@@ -369,7 +369,7 @@ try{
 
 const response = await fetch(
 
-"http://localhost:4000/api/quizInput",
+"https://univeristy-management-system.vercel.app/api/quizInput",
 
 {
 

@@ -57,7 +57,7 @@ export default function AppointmentManager({ teacherData }) {
     try {
 
       await axios.post(
-        "http://localhost:4000/api/acceptAppointment",
+        "https://univeristy-management-system.vercel.app/api/acceptAppointment",
         {
           appointmentId:id
         }
@@ -98,7 +98,7 @@ export default function AppointmentManager({ teacherData }) {
     try {
 
       await axios.post(
-        "http://localhost:4000/api/rejectAppointment",
+        "https://univeristy-management-system.vercel.app/api/rejectAppointment",
         {
           appointmentId:id,
           remarks:"Teacher rejected appointment"

@@ -20,7 +20,7 @@ export default function AssignmentChecker() {
       try {
 
         const res = await fetch(
-          `http://localhost:4000/api/teacherDashboard/${teacherId}/assignmentSubmission`
+          `https://univeristy-management-system.vercel.app/api/teacherDashboard/${teacherId}/assignmentSubmission`
         );
 
         const data = await res.json();
@@ -105,7 +105,7 @@ export default function AssignmentChecker() {
 
 
       const res = await fetch(
-        "http://localhost:4000/api/manualAssignmentMarksUploading",
+        "https://univeristy-management-system.vercel.app/api/manualAssignmentMarksUploading",
         {
           method:"PUT",
 

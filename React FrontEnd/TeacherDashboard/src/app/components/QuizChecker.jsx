@@ -47,7 +47,7 @@ try{
 
 
 const res = await fetch(
-`http://localhost:3000/api/teacherDashboard/${teacherId}/quizSubmission`
+`https://univeristy-management-system.vercel.app/api/teacherDashboard/${teacherId}/quizSubmission`
 );
 
 

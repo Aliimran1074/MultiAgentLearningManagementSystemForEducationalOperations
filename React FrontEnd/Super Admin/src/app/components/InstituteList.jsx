@@ -68,7 +68,7 @@ export function InstituteList() {
 
   const detailsOfAllSubscriptionPlans = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/getAllSubscriptionPlanDetails")
+      const response = await fetch("https://univeristy-management-system.vercel.app/api/getAllSubscriptionPlanDetails")
       const data = await response.json()
       if (!response.ok) {
         console.log("Server error while fetching all plan details")
@@ -91,7 +91,7 @@ export function InstituteList() {
 
   const getInfoOfAvailableInstitutes = async () => {
     try {
-      const gettingInfoOfInstituteFromServer = await fetch("http://localhost:4000/api/allInstituteInfo")
+      const gettingInfoOfInstituteFromServer = await fetch("https://univeristy-management-system.vercel.app/api/allInstituteInfo")
       const data = await gettingInfoOfInstituteFromServer.json()
       if (!gettingInfoOfInstituteFromServer.ok) {
         console.log("Server error while fetching institutes")
@@ -119,7 +119,7 @@ export function InstituteList() {
         console.log("Please Write contact no consist of 11 numbers")
       }
       else{
-      const response = await fetch("http://localhost:4000/api/instituteCreation",{
+      const response = await fetch("https://univeristy-management-system.vercel.app/api/instituteCreation",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"

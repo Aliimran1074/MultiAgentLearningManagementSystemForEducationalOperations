@@ -63,7 +63,7 @@ try{
 setLoading(true);
 
 const response = await axios.get(
-"http://localhost:4000/api/user-management"
+"https://univeristy-management-system.vercel.app/api/user-management"
 );
 
 

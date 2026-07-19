@@ -38,6 +38,7 @@ require('./Automation/autoCounsellingAgent')
 require('./Automation/autoCounsellingRetryAgent')
 app.use(express.json())
 app.use(cors())
+
 app.get("/", (req, res) => {
     res.send("LMS Backend is Working");
 })

@@ -63,7 +63,7 @@ setLoading(true);
 
 
 const response = await fetch(
-"http://localhost:4000/api/getSuperAdminReport"
+"https://univeristy-management-system.vercel.app/api/getSuperAdminReport"
 )
 
 

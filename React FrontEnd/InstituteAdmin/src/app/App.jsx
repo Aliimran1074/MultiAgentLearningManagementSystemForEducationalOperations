@@ -56,10 +56,8 @@ export default function App() {
 
 
         const response = await axios.get(
-          `http://localhost:4000/api/instituteDashboard/${instituteId}`
+          `https://univeristy-management-system.vercel.app/instituteDashboard/${instituteId}`
         );
-
-
         console.log(
           "Institute Dashboard Data",
           response.data
@@ -69,8 +67,6 @@ export default function App() {
         setDashboardData(
           response.data.data
         );
-
-
       }
       catch(error){
 

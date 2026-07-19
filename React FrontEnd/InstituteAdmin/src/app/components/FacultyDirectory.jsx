@@ -24,7 +24,7 @@ export default function FacultyDirectory({ selectedSession }) {
     const fetchFaculty = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/facultyDirectory/${instituteId}`
+          `https://univeristy-management-system.vercel.app/api/facultyDirectory/${instituteId}`
         );
         console.log("Faculty Data:", response.data);
         setFacultyData(response.data.data.faculty);
