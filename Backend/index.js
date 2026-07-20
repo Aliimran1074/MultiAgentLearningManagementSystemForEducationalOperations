@@ -38,6 +38,7 @@ require('./Automation/autoCounsellingAgent')
 require('./Automation/autoCounsellingRetryAgent')
 app.use(express.json())
 app.use(cors())
+const port=process.env.Port
 
 app.get("/", (req, res) => {
     res.send("LMS Backend is Working");
@@ -82,12 +83,6 @@ app.use('/api',teacherDashboardRoutes)
 app.use('/api',studentDashboardRoutes)
 app.use('/api',instituteAdminDashboardRoutes)
 app.use('/api',extraSuperAdminDashboardRoutes)
-const port=process.env.Port
 
 
-
-// app.listen(port,async()=>{
-//     await databaseConnection()
-//     console.log("App Listen on Port ",port)
-// })   
 

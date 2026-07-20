@@ -56,7 +56,7 @@ export default function App() {
 
 
         const response = await axios.get(
-          `https://univeristy-management-system.vercel.app/instituteDashboard/${instituteId}`
+          `https://univeristy-management-system.vercel.app/api/instituteDashboard/${instituteId}`
         );
         console.log(
           "Institute Dashboard Data",
@@ -186,7 +186,7 @@ return(
 <div>
 
 <h2 className="font-bold">
-MIT LMS
+LMS
 </h2>
 
 <p className="text-xs text-gray-500">
@@ -312,7 +312,11 @@ dashboardData?.students?.total || 0
 </span>
 
 </div>
-
+            <div>
+              <button style={{cursor:'pointer',backgroundColor:"black",color:"white"}} onClick={()=>{
+                   window.location.href="https://teacher-dashboard-frontend.vercel.app/"
+              }}>Move To Teacher Dashboard</button>
+            </div>
 
 
 </div>

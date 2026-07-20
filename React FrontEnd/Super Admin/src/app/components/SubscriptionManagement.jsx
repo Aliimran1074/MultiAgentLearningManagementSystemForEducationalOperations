@@ -144,21 +144,6 @@ Manage all institute subscriptions
 
 </div>
 
-
-
-<Button 
-onClick={getSubscriptionManagement}
-className="bg-blue-600"
->
-
-<RefreshCw className="w-4 h-4 mr-2"/>
-
-Refresh
-
-</Button>
-
-
-
 </div>
 
 
