@@ -24,6 +24,7 @@ import {
 export default function AIAgentsControl({teacherId}) {
 
 
+
 const [agents,setAgents] = useState([])
 
 const [teacherAIInfo,setTeacherAIInfo] = useState(null)
@@ -53,12 +54,47 @@ const [difficultyLevel,setDifficultyLevel] = useState("easy")
 const [totalMarks,setTotalMarks] = useState(20)
 
 const [duration,setDuration] = useState(7)
-
+const [assignmentMode, setAssignmentMode] = useState("schedule");
+// values: "urgent" | "schedule"
 
 
 // ================================
 // GET AI AGENT INFO
 // ================================
+
+const createFunctionUsingGenerativeAi = async () => {
+  try {
+
+    const response = await fetch(
+      "http://localhost:4000/api/createAutoAssignmentUsingGenerativeAI",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          topicsName: topicName,
+          noOfQuestions: Number(noOfQuestions),
+          difficultyLevel,
+          totalMarks: Number(totalMarks),
+          instructorId: teacherAIInfo.teacherId,
+          courseId: selectedCourse
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    setShowAssignmentModal(false);
+
+    getAgentsInfo();
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
 const getAgentsInfo = async()=>{
@@ -68,7 +104,7 @@ try{
 
 
 const response = await fetch(
-`https://univeristy-management-system.vercel.app/api/teacherAIAgents/${teacherId}`
+`http://localhost:4000/api/teacherAIAgents/${teacherId}`
 )
 
 
@@ -276,7 +312,7 @@ try{
 
 
 const response = await fetch(
-"https://univeristy-management-system.vercel.app/api/createTopic",
+"http://localhost:4000/api/createTopic",
 {
 
 method:"POST",
@@ -369,7 +405,7 @@ try{
 
 const response = await fetch(
 
-"https://univeristy-management-system.vercel.app/api/quizInput",
+"http://localhost:4000/api/quizInput",
 
 {
 
@@ -1013,11 +1049,39 @@ hard
 
 </select>
 
+<input
+  className="border p-2 w-full"
+  type="number"
+  placeholder="Total Marks"
+  value={totalMarks}
+  onChange={(e) => setTotalMarks(e.target.value)}
+/>
 
+ <select
+  className="border p-2 w-full"
+  value={assignmentMode}
+  onChange={(e) => setAssignmentMode(e.target.value)}
+>
+  <option value="schedule">
+    As Per Schedule
+  </option>
+
+  <option value="urgent">
+    Urgent (Generate Now)
+  </option>
+</select>
 
 <button
 
-onClick={createAssignmentTopic}
+onClick={() => {
+
+  if (assignmentMode === "urgent") {
+    createFunctionUsingGenerativeAi();
+  } else {
+    createAssignmentTopic();
+  }
+
+}}
 
 className="bg-black text-white w-full py-2 rounded-lg"
 

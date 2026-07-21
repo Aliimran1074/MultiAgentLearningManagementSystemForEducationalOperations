@@ -211,3 +211,6 @@ DB connection or deployment per kaam pora karna hai
 
 21/7/2026
 Generative Ai ka kaam karna hai agents wale option me aik button create karna hoga jis me urgent likha ho or jese hi topic dal kar urgnet per kaam kare to assignment create hojaye
+
+22/7/2026
+Generative AI Wala Kaam jald pora karke Video Upload Karni hai

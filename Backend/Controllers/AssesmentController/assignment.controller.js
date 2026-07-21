@@ -60,8 +60,6 @@ const createAutoAssignmentByGivingFile = async(req,res)=>{
         const formData = new FormData()
         formData.append('pdf',req.file.buffer,req.file.originalname)
     
-
-        // const response = await axios.post("http://localhost:4000/setup/generate-assignment-from-pdf",formData,{headers:formData.getHeaders()})
         const response = await axios.post("https://huggingface-configuration.vercel.app/setup/generate-assignment-from-pdf",formData,{headers:formData.getHeaders()})
         console.log("Response is: ",response)
         if(!response){
@@ -634,6 +632,134 @@ catch(error){
 
 
 
+const createAutoAssignmentForGenerativeAIFunction= async(req,res)=>{
+    try{
+        const {topicsName,noOfQuestions,difficultyLevel,totalMarks,instructorId,courseId}= req.body
+        if(topicsName==''||noOfQuestions==0 ||difficultyLevel==''||totalMarks==''){
+            console.log('Please Give Complete Data')
+            return res.status(400).json({message:"Please Give Complete Data"})
+        }
+    // check how many assignments already created 
+    const checkNoOfAssignmentsAlreadyCreatedOfSameCourse = await assignmentModel.find({course:courseId}).countDocuments()
+    if(checkNoOfAssignmentsAlreadyCreatedOfSameCourse>10){
+        console.log("You cant create More Assignments")
+        
+            return res.status(400).json({message:"You cant create More Assignments of That Particular Course"})
+    }
+
+        const inputData = {
+        topicsName: topicsName,
+        totalMarks:totalMarks,
+        noOfQuestions: noOfQuestions,
+        difficultyLevel:difficultyLevel
+    }
+
+    // find institute id using course id 
+    const getCourseDetails = await courseModel.findById(courseId)
+    const instituteId = getCourseDetails.instituteId
+    const assignmentData =
+        await createAssignmentsViaTopic(inputData)
+
+    if (!assignmentData || assignmentData.message !== "Done" ) {
+        return {
+            success: false,
+            message: "Issue in Getting Result from LLM"
+        }
+    }
+
+    const instituteInfo = await instituteModel.findById(instituteId)
+    const instructorInfo = await staffModel.findById(instructorId)
+    const info = {
+        instituteName: instituteInfo.name,
+        instructorName: instructorInfo.name
+    }
+
+    const data = assignmentData.finalResult
+
+    const parseData = JSON.parse(data)
+
+    const fileName =
+        `${inputData.topicsName} assignment file.pdf`
+
+    const pdfBuffer =
+        await createPdfInBuffer(parseData, info)
+
+    if (!pdfBuffer) {
+
+        return {
+            success: false,
+            message: "Issue in Creating PDF Buffer"
+        }
+    }
+
+    const imageKitResponse =
+        await imageKitConfig.upload({
+            file: pdfBuffer,
+            fileName,
+            folder: "/assignmentFile"
+        })
+
+    const getUrl = imageKitResponse.url
+
+    if (!getUrl) {
+
+        return {
+            success: false,
+            message: "Issue in Uploading PDF"
+        }
+    }
+
+    const assignmentQuestions =
+        JSON.stringify(parseData)
+
+    const assignmentCreation =
+       await assignmentModel.create({
+    instituteId,
+    assignmentFile: getUrl,
+    course: courseId,
+    createdBy: instructorId,
+    duration: 7,
+    assignmentQuestions
+});
+
+    if (!assignmentCreation) {
+
+        return {
+            success: false,
+            message: "Issue in Creating Assignment"
+        }
+    }
+
+    const findSubscription =
+        await subscriptionModel.findOne({
+            instituteId: instituteId
+        })
+
+    if (!findSubscription) {
+
+        return {
+            success: false,
+            message:
+                "No Subscription Found Against This Institute"
+        }
+    }
+
+    findSubscription.aiUsage.assignmentGeneratorUsed += 1
+    findSubscription.aiUsage.totalAiRequests += 1
+
+    await findSubscription.save()
+
+   return res.status(201).json({
+    success:true,
+    message:"Assignment Generated Successfully",
+    data:getUrl
+})
+    }
+    catch(error){
+        console.log("Error in Creating Assignment using Generative AI",error)
+        return res.status(404).json({message:"Error in Creating Assignment using Generative AI",error})
+    }
+}
 
 const createAssignmentsViaTopic =async(data)=>{
     try {
@@ -928,7 +1054,7 @@ const createAssignmentFunction = async (
     }
 }
 
-module.exports = {createAssignment,assignmentFileCreation,assignmentDateCalculator,autoAssignmentCreation,assignmentQueueCalling,checkAssignmentInput,checking,createAutoAssignmentByGivingFile,manualAssignmentCreationByPdfUploading,assignmentManualMarksUploadingByTeacher,functionOfSelectingOfAssignmentTypeForCreation,processAssignmentTopic}
+module.exports = {createAssignment,assignmentFileCreation,assignmentDateCalculator,autoAssignmentCreation,assignmentQueueCalling,checkAssignmentInput,checking,createAutoAssignmentByGivingFile,manualAssignmentCreationByPdfUploading,assignmentManualMarksUploadingByTeacher,functionOfSelectingOfAssignmentTypeForCreation,processAssignmentTopic,createAutoAssignmentForGenerativeAIFunction}
 
 
 

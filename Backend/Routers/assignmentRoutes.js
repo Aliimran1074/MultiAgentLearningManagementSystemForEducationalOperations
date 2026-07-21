@@ -1,5 +1,5 @@
 const { assignmentCheckerFunction } = require('../Controllers/AssesmentController/assignementCheckerUsingAI')
-const { createAssignment, assignmentFileCreation, assignmentQueueCalling, createAutoAssignmentByUploadingFile, getAssignmentData, checking, createAutoAssignmentByGivingFile, manualAssignmentCreationByPdfUploading, assignmentManualMarksUploadingByTeacher, functionOfSelectingOfAssignmentTypeForCreation } = require('../Controllers/AssesmentController/assignment.controller')
+const { createAssignment, assignmentFileCreation, assignmentQueueCalling, createAutoAssignmentByUploadingFile, getAssignmentData, checking, createAutoAssignmentByGivingFile, manualAssignmentCreationByPdfUploading, assignmentManualMarksUploadingByTeacher, functionOfSelectingOfAssignmentTypeForCreation, createAutoAssignmentForGenerativeAIFunction } = require('../Controllers/AssesmentController/assignment.controller')
 const { assignmentUploading } = require('../Controllers/AssesmentController/assignmentUploading.controller')
 const { uploadforAssessment } = require('../Multer/multer')
 
@@ -16,5 +16,6 @@ router.post('/uploadAssignment',uploadforAssessment,assignmentUploading)
 router.put('/manualAssignmentMarksUploading',assignmentManualMarksUploadingByTeacher)
 router.post('/getAssignmentTopicsDetails',functionOfSelectingOfAssignmentTypeForCreation)
 router.route('/callAIAssignmentChecker').post(assignmentCheckerFunction)
+router.route('/createAutoAssignmentUsingGenerativeAI').post(createAutoAssignmentForGenerativeAIFunction)
 // router.post('/createAssignmentViaTopic',createAssignmentViaTopic)
 module.exports=router
