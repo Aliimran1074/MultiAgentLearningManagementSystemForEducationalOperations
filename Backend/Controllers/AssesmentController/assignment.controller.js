@@ -634,6 +634,7 @@ catch(error){
 
 const createAutoAssignmentForGenerativeAIFunction= async(req,res)=>{
     try{
+    console.log("Enter in Assignment Creation Function of Auto Assignment Creation")
         const {topicsName,noOfQuestions,difficultyLevel,totalMarks,instructorId,courseId}= req.body
         if(topicsName==''||noOfQuestions==0 ||difficultyLevel==''||totalMarks==''){
             console.log('Please Give Complete Data')
@@ -641,7 +642,7 @@ const createAutoAssignmentForGenerativeAIFunction= async(req,res)=>{
         }
     // check how many assignments already created 
     const checkNoOfAssignmentsAlreadyCreatedOfSameCourse = await assignmentModel.find({course:courseId}).countDocuments()
-    if(checkNoOfAssignmentsAlreadyCreatedOfSameCourse>10){
+    if(checkNoOfAssignmentsAlreadyCreatedOfSameCourse>20){
         console.log("You cant create More Assignments")
         
             return res.status(400).json({message:"You cant create More Assignments of That Particular Course"})
@@ -730,24 +731,67 @@ const createAutoAssignmentForGenerativeAIFunction= async(req,res)=>{
         }
     }
 
-    const findSubscription =
-        await subscriptionModel.findOne({
-            instituteId: instituteId
-        })
+   const findSubscription =
+    await subscriptionModel.findOne({
+        instituteId: instituteId
+    })
 
-    if (!findSubscription) {
 
-        return {
-            success: false,
-            message:
-                "No Subscription Found Against This Institute"
-        }
-    }
+console.log(
+    "========== BEFORE UPDATE =========="
+)
 
-    findSubscription.aiUsage.assignmentGeneratorUsed += 1
-    findSubscription.aiUsage.totalAiRequests += 1
+console.log("Institute ID:", instituteId)
 
-    await findSubscription.save()
+console.log(
+    "Subscription Found:",
+    findSubscription
+)
+
+
+if (!findSubscription) {
+
+    console.log("NO SUBSCRIPTION FOUND")
+
+    return res.status(400).json({
+        success:false,
+        message:"No Subscription Found Against This Institute"
+    })
+}
+
+
+
+console.log(
+"Old Assignment Count:",
+findSubscription.aiUsage?.assignmentGeneratorUsed
+)
+
+
+
+findSubscription.aiUsage.assignmentGeneratorUsed += 1
+
+findSubscription.aiUsage.totalAiRequests += 1
+
+
+console.log(
+"AFTER INCREMENT BEFORE SAVE:",
+findSubscription.aiUsage
+)
+
+
+
+await findSubscription.save()
+
+
+
+console.log(
+"========== AFTER SAVE =========="
+)
+
+console.log(
+"Saved Usage:",
+findSubscription.aiUsage
+)
 
    return res.status(201).json({
     success:true,

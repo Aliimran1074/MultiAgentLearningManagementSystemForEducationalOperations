@@ -11,18 +11,10 @@ const teacherAIAgentInfo = async (req, res) => {
 
         const { teacherId } = req.params
 
-
-
-        // ==========================
-        // TEACHER INFO
-        // ==========================
-
         const teacherInfo =
             await staffModel.findById(teacherId)
 
-
         if(!teacherInfo){
-
             return res.status(404).json({
                 success:false,
                 message:"Teacher not found"
@@ -33,13 +25,6 @@ const teacherAIAgentInfo = async (req, res) => {
 
         const instituteId =
             teacherInfo.instituteId
-
-
-
-
-        // ==========================
-        // SUBSCRIPTION INFO
-        // ==========================
 
         const subscription =
             await subscriptionModel.findOne({
@@ -61,13 +46,6 @@ const teacherAIAgentInfo = async (req, res) => {
 
         }
 
-
-
-
-        // ==========================
-        // COURSES OF TEACHER
-        // ==========================
-
         const courses =
             await courseModel.find({
                 instructorTeached:teacherId
@@ -75,12 +53,6 @@ const teacherAIAgentInfo = async (req, res) => {
             .select("_id name ForClass ForSemester")
 
 
-
-
-
-        // ==========================
-        // ASSIGNMENT GENERATOR INFO
-        // ==========================
 
         const assignmentTopics =
             await assignmentTopicModel.find({
@@ -99,38 +71,33 @@ const teacherAIAgentInfo = async (req, res) => {
         })
 
 
-        const assignmentLimit = 10
+ const assignmentLimit = 20;
+
+const assignmentUsed =
+subscriptionUsage.assignmentGeneratorUsed || 0;
 
 
-        const assignmentGenerator = {
+const assignmentGenerator = {
 
-            enabled:
-            totalAssignmentTopics < assignmentLimit,
-
-
-            used:
-            totalAssignmentTopics,
+    enabled:
+    assignmentUsed < assignmentLimit,
 
 
-            limit:
-            assignmentLimit,
+    used:
+    assignmentUsed,
 
 
-            remaining:
-            Math.max(
-                assignmentLimit-totalAssignmentTopics,
-                0
-            )
-
-        }
+    limit:
+    assignmentLimit,
 
 
+    remaining:
+    Math.max(
+        assignmentLimit - assignmentUsed,
+        0
+    )
 
-
-
-        // ==========================
-        // QUIZ GENERATOR INFO
-        // ==========================
+}
 
 
         const quizTopics =
@@ -177,15 +144,6 @@ const teacherAIAgentInfo = async (req, res) => {
             )
 
         }
-
-
-
-
-
-        // ==========================
-        // FINAL RESPONSE
-        // ==========================
-
 
         return res.status(200).json({
 

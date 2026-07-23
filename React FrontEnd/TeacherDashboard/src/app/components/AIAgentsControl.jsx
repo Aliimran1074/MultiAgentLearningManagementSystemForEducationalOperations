@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-
+import axios from 'axios'
 import { 
   Card,
   CardContent,
@@ -51,7 +51,7 @@ const [noOfQuestions,setNoOfQuestions] = useState(5)
 
 const [difficultyLevel,setDifficultyLevel] = useState("easy")
 
-const [totalMarks,setTotalMarks] = useState(20)
+const [totalMarks,setTotalMarks] = useState(5)
 
 const [duration,setDuration] = useState(7)
 const [assignmentMode, setAssignmentMode] = useState("schedule");
@@ -62,221 +62,109 @@ const [assignmentMode, setAssignmentMode] = useState("schedule");
 // GET AI AGENT INFO
 // ================================
 
-const createFunctionUsingGenerativeAi = async () => {
-  try {
-
-    const response = await fetch(
-      "http://localhost:4000/api/createAutoAssignmentUsingGenerativeAI",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+  const createFunctionUsingGenerativeAi = async () => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:4000/api/createAutoAssignmentUsingGenerativeAI",
+        {
           topicsName: topicName,
           noOfQuestions: Number(noOfQuestions),
           difficultyLevel,
           totalMarks: Number(totalMarks),
           instructorId: teacherAIInfo.teacherId,
-          courseId: selectedCourse
-        })
-      }
+          courseId: selectedCourse,
+        }
+      );
+
+      console.log(data);
+
+      setShowAssignmentModal(false);
+
+      getAgentsInfo();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+const getAgentsInfo = async () => {
+  try {
+    const { data } = await axios.get(
+      `http://localhost:4000/api/teacherAIAgents/${teacherId}`
     );
 
-    const data = await response.json();
+    if (data.success) {
+      setTeacherAIInfo(data);
 
-    console.log(data);
+      const backendAgents = data.agents;
 
-    setShowAssignmentModal(false);
-
-    getAgentsInfo();
-
+      setAgents([
+        {
+          id: "assignment-generator",
+          name: "Assignment Generator",
+          description: "Automatically generate assignments using AI",
+          icon: FileText,
+          enabled: backendAgents.assignmentGenerator.enabled,
+          color: "blue",
+          stats: {
+            generated: backendAgents.assignmentGenerator.used,
+            limit: backendAgents.assignmentGenerator.limit,
+          },
+          remaining: backendAgents.assignmentGenerator.remaining,
+        },
+        {
+          id: "quiz-generator",
+          name: "Quiz Generator",
+          description: "Create quizzes using AI",
+          icon: ClipboardCheck,
+          enabled: backendAgents.quizGenerator.enabled,
+          color: "green",
+          stats: {
+            generated: backendAgents.quizGenerator.used,
+            limit: backendAgents.quizGenerator.limit,
+          },
+          remaining: backendAgents.quizGenerator.remaining,
+        },
+        {
+          id: "assignment-checker",
+          name: "Assignment Checker",
+          description: "AI powered assignment checking",
+          icon: FileText,
+          enabled: true,
+          color: "purple",
+          stats: {
+            checked: backendAgents.assignmentChecker.used,
+          },
+        },
+        {
+          id: "quiz-checker",
+          name: "Quiz Checker",
+          description: "Automatic quiz checking",
+          icon: ClipboardCheck,
+          enabled: true,
+          color: "orange",
+          stats: {
+            checked: backendAgents.quizChecker.used,
+          },
+        },
+        {
+          id: "content-creator",
+          name: "Course Content Creator",
+          description: "Generate course content",
+          icon: BookOpen,
+          enabled: true,
+          color: "indigo",
+          stats: {
+            created: 0,
+          },
+        },
+      ]);
+    }
   } catch (error) {
     console.log(error);
+  } finally {
+    setLoading(false);
   }
 };
-
-
-const getAgentsInfo = async()=>{
-
-
-try{
-
-
-const response = await fetch(
-`http://localhost:4000/api/teacherAIAgents/${teacherId}`
-)
-
-
-const data = await response.json()
-
-
-
-if(data.success){
-
-
-setTeacherAIInfo(data)
-
-
-
-const backendAgents = data.agents
-
-
-
-setAgents([
-
-
-{
-id:"assignment-generator",
-
-name:"Assignment Generator",
-
-description:
-"Automatically generate assignments using AI",
-
-icon:FileText,
-
-enabled:
-backendAgents.assignmentGenerator.enabled,
-
-color:"blue",
-
-stats:{
-generated:
-backendAgents.assignmentGenerator.used,
-
-limit:
-backendAgents.assignmentGenerator.limit
-},
-
-remaining:
-backendAgents.assignmentGenerator.remaining
-
-},
-
-
-
-{
-id:"quiz-generator",
-
-name:"Quiz Generator",
-
-description:
-"Create quizzes using AI",
-
-icon:ClipboardCheck,
-
-enabled:
-backendAgents.quizGenerator.enabled,
-
-color:"green",
-
-stats:{
-generated:
-backendAgents.quizGenerator.used,
-
-limit:
-backendAgents.quizGenerator.limit
-},
-
-remaining:
-backendAgents.quizGenerator.remaining
-
-},
-
-
-
-
-{
-id:"assignment-checker",
-
-name:"Assignment Checker",
-
-description:
-"AI powered assignment checking",
-
-icon:FileText,
-
-enabled:true,
-
-color:"purple",
-
-stats:{
-checked:
-backendAgents.assignmentChecker.used
-}
-
-},
-
-
-
-
-{
-id:"quiz-checker",
-
-name:"Quiz Checker",
-
-description:
-"Automatic quiz checking",
-
-icon:ClipboardCheck,
-
-enabled:true,
-
-color:"orange",
-
-stats:{
-checked:
-backendAgents.quizChecker.used
-}
-
-},
-
-
-
-{
-id:"content-creator",
-
-name:"Course Content Creator",
-
-description:
-"Generate course content",
-
-icon:BookOpen,
-
-enabled:true,
-
-color:"indigo",
-
-stats:{
-created:0
-}
-
-}
-
-
-
-])
-
-
-}
-
-
-}
-catch(error){
-
-console.log(error)
-
-}
-finally{
-
-setLoading(false)
-
-}
-
-
-}
-
 
 
 
@@ -304,89 +192,36 @@ const toggleAgent = (agentId) => {
 // CREATE ASSIGNMENT TOPICS
 // ================================
 
+const createAssignmentTopic = async () => {
+  try {
+    const { data } = await axios.post(
+      "http://localhost:4000/api/createTopic",
+      {
+        subscriptionId: teacherAIInfo.subscriptionId,
+        courseId: selectedCourse,
+        staffId: teacherAIInfo.teacherId,
+        duration,
+        assignmentTopics: [
+          {
+            topicName,
+            source: "outside",
+            noOfQuestions: Number(noOfQuestions),
+            difficultyLevel,
+            totalMarks: Number(totalMarks),
+          },
+        ],
+      }
+    );
 
-const createAssignmentTopic = async()=>{
+    console.log(data);
 
+    setShowAssignmentModal(false);
 
-try{
-
-
-const response = await fetch(
-"http://localhost:4000/api/createTopic",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-subscriptionId:
-teacherAIInfo.subscriptionId,
-
-
-courseId:
-selectedCourse,
-
-
-staffId:
-teacherAIInfo.teacherId,
-
-
-duration,
-
-
-assignmentTopics:[
-
-{
-
-topicName,
-
-source:"outside",
-
-noOfQuestions:Number(noOfQuestions),
-
-difficultyLevel,
-
-totalMarks:Number(totalMarks)
-
-}
-
-]
-
-
-})
-
-}
-
-
-)
-
-
-const data = await response.json()
-
-
-console.log(data)
-
-
-
-setShowAssignmentModal(false)
-
-getAgentsInfo()
-
-
-
-}
-catch(error){
-
-console.log(error)
-
-}
-
-
-}
+    getAgentsInfo();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
 
@@ -397,92 +232,37 @@ console.log(error)
 // ================================
 
 
-const createQuizTopic = async()=>{
+const createQuizTopic = async () => {
+  try {
+    const { data } = await axios.post(
+      "http://localhost:4000/api/quizInput",
+      {
+        subscriptionId: teacherAIInfo.subscriptionId,
+        courseId: selectedCourse,
+        staffId: teacherAIInfo.teacherId,
+        duration,
+        quizTopics: [
+          {
+            topicName,
+            source: "outside",
+            type: "MCQs Based",
+            noOfQuestions: Number(noOfQuestions),
+            difficultyLevel,
+            totalMarks: Number(totalMarks),
+          },
+        ],
+      }
+    );
 
+    console.log(data);
 
-try{
+    setShowQuizModal(false);
 
-
-const response = await fetch(
-
-"http://localhost:4000/api/quizInput",
-
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-subscriptionId:
-teacherAIInfo.subscriptionId,
-
-
-courseId:
-selectedCourse,
-
-
-staffId:
-teacherAIInfo.teacherId,
-
-
-duration,
-
-
-quizTopics:[
-
-{
-
-topicName,
-
-source:"outside",
-
-type:"MCQs Based",
-
-noOfQuestions:Number(noOfQuestions),
-
-difficultyLevel,
-
-totalMarks:Number(totalMarks)
-
-}
-
-]
-
-
-})
-
-
-}
-
-)
-
-
-const data = await response.json()
-
-
-console.log(data)
-
-
-setShowQuizModal(false)
-
-
-getAgentsInfo()
-
-
-}
-catch(error){
-
-console.log(error)
-
-}
-
-
-
-}
+    getAgentsInfo();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
 
